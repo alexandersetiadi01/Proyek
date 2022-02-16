@@ -1,0 +1,85 @@
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 15%;
+  background-color: #5a5757;
+  position: fixed;
+  height: 100%;
+  overflow: auto;
+}
+
+.App{
+  background-color: white;
+}
+
+li a {
+  display: block;
+  color: #000;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+
+li a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+
+li a:hover:not(.active) {
+  background-color: blue;
+  color: white;
+  border-radius: 40px;
+}
+
+.content{
+  display: flex;
+  height: 90vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalBackground {
+  width: 100vw;
+  height: 90vh;
+  background-color: rgb(247, 242, 242);
+  position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalContainer {
+  width: 500px;
+  height: 750px;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content:flex-start;
+  padding: 25px;
+  text-align: center;
+}
+
+.TableContent{
+  display: flex;
+  height: 0;
+}
+h2{
+  text-align: center;
+  padding-top: 5px;
+  
+}
+
+.addButton{
+  bottom: 10px;
+  right: 10px;
+  color: red;
+  position: fixed;
+}
+
+.addButton:hover{
+  color: orange;
+}
+
