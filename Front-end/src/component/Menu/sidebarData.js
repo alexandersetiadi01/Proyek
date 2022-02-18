@@ -2,8 +2,8 @@ import React from "react"
 
 export const sidebarData = [
     {
-        title:'Home',
-        path:'/',
+        title:'Master Barang',
+        path:'/Master_Barang',
         classname:'nav-text'
     },
     {
