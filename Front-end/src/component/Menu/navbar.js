@@ -2,26 +2,33 @@ import React, {useState} from "react";
 import * as FaIcons from "react-icons/fa";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Link } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import "./navbar.css";
-import {sidebarData} from "./sidebarData";
+import {sidebarData, sidebarDataAdmin} from "./sidebarData";
+import { setLogOut } from "../../repository";
 
 function Navbar(){ 
     const [sidebar, setSidebar] = useState(false);
-
+   //const location = useLocation();
     const showSidebar = () => setSidebar(!sidebar);
+    const navigate = useNavigate();
+    const logout = () => {
+        setLogOut();
+        navigate("/");
+    }
+
     return(
     <>
         <nav className="navbar sticky-top navbar-expand-xxl navbar-blue bg-dark">
         <Link to="#" className="menu-bars">
             <FaIcons.FaBars onClick={showSidebar}/>
-        </Link>
+        </Link>  
         <h1>(Nama Proyek)</h1>
-
         </nav>
         <nav className={sidebar ? 'nav-menu-active' : 'nav-menu'}>
+            
             <ul classname="nav-menu-items" onClick={showSidebar}>
-                {sidebarData.map((item, index) => {
+                {sidebarDataAdmin.map((item, index) => {
                     return(
                         <li key={index} className={item.classname}>
                             <Link to={item.path}>
@@ -30,6 +37,11 @@ function Navbar(){
                         </li>
                     )
                 })}
+                <li className="nav-text">
+                    <button onClick={logout}>
+                        logout
+                    </button>
+                </li>
 
             </ul>
         </nav>
