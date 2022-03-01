@@ -2,15 +2,18 @@ import React, { useEffect, useState } from "react";
 import "../../App.css";
 import { Table, Button, CloseButton, Modal } from "react-bootstrap";
 import * as BsIcons from "react-icons/bs";
-import { createBarang, getAllMasterBarang } from "../../repository";
-
+import { checkMasterBarang, createBarang, getAllMasterBarang, getRole } from "../../repository";
+import * as XLSX from 'xlsx';
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import paginationFactory from "react-bootstrap-table2-paginator";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../Menu/navbar";
 
 function MasterBarangPage(){
     
     const [modal, setModal] = useState(false);
+    const navigate = useNavigate();
     const initialState = {
         //kodebarang:"",
         namabarang: "",
@@ -20,7 +23,8 @@ function MasterBarangPage(){
         merk: "",  
         satuan: "",
         ukuran: "",
-        price: ""
+        proyek: "",
+        totalQTY: 0
     }
     const [inputs, setInputs] = useState(initialState);
     const resetInput = () => setInputs(initialState);
@@ -34,10 +38,25 @@ function MasterBarangPage(){
 
     const masukinBarang = async (event) => {
         event.preventDefault();
+        const check = await checkMasterBarang(inputs.namabarang);
+        if(check !== null){
+            window.alert("item already exist");
+        }else{
+            await createBarang(inputs);
+            window.alert("item added");
+            showModal();
+            //navigate("/Master_Barang");  
+            window.location.reload();
+           
+        }
+        
+        /*console.log(checkMasterBarang(inputs));
         await createBarang(inputs);
-        window.alert("item added")
+        window.alert("item added");
         showModal();
-        window.location.reload();
+        navigate("/Master_Barang");  */
+        //window.location.reload();
+        
     }
 
     const [rows, setRows] = useState([]);
@@ -46,7 +65,7 @@ function MasterBarangPage(){
         event.preventDefault();
         setSearch({...search, [event.target.name]: event.target.value});
     }
-
+    
     useEffect(() => {
         async function getMasterBarangAPI(){
             const data = await getAllMasterBarang()
@@ -61,7 +80,6 @@ function MasterBarangPage(){
                     merk: barang.merk,  
                     satuan: barang.satuan,
                     ukuran: barang.ukuran,
-                    price: barang.price
                 }
                 rowsData.push(newBarang);
             }
@@ -80,21 +98,25 @@ function MasterBarangPage(){
         {
             dataField: 'category',
             text: 'Category',
+            filter: textFilter(),
             sort: true
         }, 
         {
             dataField: 'subCategory',
             text: 'Sub Category',
+            filter: textFilter(),
             sort: true
         },
         {
             dataField: 'merk',
             text: 'Merk',
+            filter: textFilter(),
             sort: true
         },
         {
             dataField: 'type',
             text: 'Type',
+            filter: textFilter(),
             sort: true
     
         },
@@ -109,9 +131,15 @@ function MasterBarangPage(){
             sort: true
         }];
 
+    const showNotif = () => {
+        window.alert("your account have no permision to access this feature");
+    }
 
+    //console.log(getRole());
+    
     return(
         <>  
+          <Navbar />
             <h2 text-align="center">Master Barang</h2>
             {/*
             <div className="searchGroup">
@@ -121,11 +149,18 @@ function MasterBarangPage(){
             */}
             
             <BootstrapTable 
-            keyField='kodemasuk' data={ rows } columns={ columns } 
+            keyField='namabarang' data={ rows } columns={ columns } 
             filter={ filterFactory() } pagination={paginationFactory()} striped hover/>
-            <div className="addButton">
-                <BsIcons.BsFillPlusCircleFill size={50} onClick={showModal}/>
-            </div>
+            {getRole() === "ADMIN" ? 
+                <div className="addButton">
+                    <BsIcons.BsFillPlusCircleFill size={50} onClick={showModal}/>
+                </div>
+            :
+                <div className="addButton">
+                    <BsIcons.BsFillPlusCircleFill size={50} onClick={showNotif}/>
+                </div>
+            }
+            
             <Modal
                 show={modal}
                 size="lg-down"
@@ -140,7 +175,7 @@ function MasterBarangPage(){
                         <h4>Nama barang:</h4>
                         <input type="text" name="namabarang" value={inputs.namabarang} onChange={handleInputChange} autoComplete="off" required></input>
                         <h4>Category:</h4>
-                        <input type="text" name="category" value={inputs.category} onChange={handleInputChange}></input>
+                        <input type="text" name="category" value={inputs.category} onChange={handleInputChange} required></input>
                         <h4>Sub Category:</h4>
                         <input type="text" name="subCategory" value={inputs.subCategory} onChange={handleInputChange}></input>
                         <h4>Merk:</h4>
@@ -151,8 +186,6 @@ function MasterBarangPage(){
                         <input type="text" name="satuan" value={inputs.satuan} onChange={handleInputChange} required></input>
                         <h4>Ukuran:</h4>
                         <input type="text" name="ukuran" value={inputs.ukuran} onChange={handleInputChange} required></input>
-                        <h4>Price:</h4>
-                        <input type="number" name="price" value={inputs.price} onChange={handleInputChange} min="0" required></input>
                         <button type="submit" hidden></button>
                         <br/><br/>
                         <div className="twoside">
