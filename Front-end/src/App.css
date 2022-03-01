@@ -78,6 +78,5 @@ input{
 }
 
 Button{
-  width: 7vw;
+  width: flex-start;
 }
-
