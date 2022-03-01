@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true
         },
-        QTY:{
+        quantity:{
             type: DataTypes.INTEGER,
             allowNull: false
         },
@@ -30,7 +30,12 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DATEONLY,
             allowNull: false
         },
-        
+        status:{
+            type: DataTypes.STRING
+        },
+        proyek:{
+            type: DataTypes.STRING
+        }
     },
     {
         freezeTableName: true,

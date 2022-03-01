@@ -27,16 +27,19 @@ module.exports = (sequelize, DataTypes) => {
         },  
         satuan:{
             type: DataTypes.STRING,
-            allowNull: false
+            //allowNull: false
         },
         ukuran:{
             type: DataTypes.STRING,
-            allowNull: false
+            //allowNull: false
         },
-        price:{
-            type: DataTypes.DOUBLE,
-            allowNull: false
-        }
+        proyek:{  //masuk ke proyek mana barangnya
+            type: DataTypes.STRING,
+            //allowNull: false
+        },
+        /*totalQTY: {
+            type: DataTypes.INTEGER
+        }*/
     },
     {
         freezeTableName: true,

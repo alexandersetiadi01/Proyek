@@ -1,8 +1,9 @@
 module.exports = (sequelize, DataTypes) => {
-    const users = sequelize.define("Users", 
+    const users = sequelize.define("users", 
     {
         ID: {
             type: DataTypes.INTEGER,
+            primaryKey: true,
             allowNull: false
         },
         username: {
@@ -16,7 +17,14 @@ module.exports = (sequelize, DataTypes) => {
         accountLevel: {
             type: DataTypes.STRING,
             allowNull: false
+            // nama-nama role: logistic, pengawas
         }
-    });
+    },
+    {
+        freezeTableName: true,
+        timestamps: false
+    }
+    
+    );
     return users
 }

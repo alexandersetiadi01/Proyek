@@ -24,6 +24,7 @@ exports.create = async (req, res) => {
         }
     )
     */
+
     const barang = await db.masterBarang.create({
         //kodebarang: req.body.kodebarang,
         namabarang: req.body.namabarang,
@@ -33,7 +34,8 @@ exports.create = async (req, res) => {
         merk: req.body.merk,  
         satuan: req.body.satuan,
         ukuran: req.body.ukuran,
-        price: req.body.price
+        proyek: req.body.proyek,
+        totalQTY: 0
     });
     res.json(barang)
 };
@@ -44,10 +46,16 @@ exports.seeAll = async (req, res) => {
     res.json(masterBarang);
 };
 
+exports.checkBarang = async (req, res) => {
+    const masterBarang = await db.masterBarang.findByPk(req.query.namabarang);
+
+    res.json(masterBarang);
+    
+};
+
 exports.searchByName = async(req, res) => {
     const name = req.body.namabarang;
-    var condition = name ? { name: { [Op.like]: `%${name}%` } } : null
-    const masterBarang = await db.masterBarang.findAll({where:{condition}});
+    const masterBarang = await db.masterBarang.findAll({where:{namabarang: name}});
 
     res.json(masterBarang);
 };

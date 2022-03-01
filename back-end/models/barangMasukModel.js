@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true
         },
         kodePO:{
-            type: DataTypes.INTEGER,
+            type: DataTypes.STRING,
             allowNull: false
         },
         namaPenerima:{
@@ -29,6 +29,16 @@ module.exports = (sequelize, DataTypes) => {
         tgl:{ 
             allowNull: false,
             type: DataTypes.DATEONLY
+        }, 
+        status:{
+            type: DataTypes.STRING
+        },
+        lokasi:{
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        proyek:{
+            type: DataTypes.STRING
         }
     },
     {
