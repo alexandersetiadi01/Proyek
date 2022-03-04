@@ -3,7 +3,7 @@ import "../../App.css";
 import { Button, CloseButton, Modal } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom"
 import * as BsIcons from "react-icons/bs";
-import { getAllBarangSisa, getAllMasterBarang, getAllBarangKeluar, addBarangSisa} from "../../repository";
+import { getAllBarangSisa, getAllMasterBarang, getAllBarangKeluar, addBarangSisa, findInventory, newInventory, inventoryMasuk, addHistory} from "../../repository";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
 import paginationFactory from "react-bootstrap-table2-paginator";
@@ -129,16 +129,19 @@ function BarangSisa(){
 
     const add = async (event) => {
         event.preventDefault();
-        if(inputs !== ""){
-            await addBarangSisa(inputs);
-            window.alert("item added")
+        await addBarangSisa(inputs);
+        window.alert("item added as barang sisa");
+        addHistory(inputs)
+        const check = await findInventory(inputs.namabarang);
+        if(check === null){
+            newInventory(inputs);
             showModal();
-            //navigate("/Barang_Sisa");
             window.location.reload();
-        }
-        else{
-            window.alert("")
-        }
+        }else{
+            inventoryMasuk(inputs);
+            window.location.reload();
+        } 
+        
     }
 
     return(

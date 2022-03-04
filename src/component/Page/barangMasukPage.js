@@ -92,13 +92,12 @@ function BarangMasukPage(){
     const resetInput = () => setInputs(initialState);
     const handleInputChange = (event) => {
         setInputs({...inputs, [event.target.name]: event.target.value});
-        console.log(typeof inputs.quantity)
     };
 
     const add = async (event) => {
         event.preventDefault();
         await addBarangMasuk(inputs);
-        window.alert("item added to barang masuk");
+        window.alert("item added as barang masuk");
         addHistory(inputs);
         const check = await findInventory(inputs.namabarang);
         if(check === null) {

@@ -43,7 +43,7 @@ function BarangKeluarPage(){
             //window.location.reload();
         }else{
             await addBarangKeluar(inputs);
-            window.alert("item added to barang keluar");
+            window.alert("item added as barang keluar");
             addHistory(inputs);
             inventoryKeluar(inputs);
             showModal();
