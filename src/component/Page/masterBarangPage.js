@@ -9,6 +9,7 @@ import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import paginationFactory from "react-bootstrap-table2-paginator";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Menu/navbar";
+import ReadFile from "../../readFile";
 
 function MasterBarangPage(){
     
@@ -49,13 +50,7 @@ function MasterBarangPage(){
             window.location.reload();
            
         }
-        
-        /*console.log(checkMasterBarang(inputs));
-        await createBarang(inputs);
-        window.alert("item added");
-        showModal();
-        navigate("/Master_Barang");  */
-        //window.location.reload();
+
         
     }
 
@@ -130,8 +125,8 @@ function MasterBarangPage(){
         window.alert("your account have no permision to access this feature");
     }
 
-    //console.log(getRole());
-    
+
+
     return(
         <>  
           <Navbar />
@@ -143,13 +138,14 @@ function MasterBarangPage(){
             {getRole() === "ADMIN" ? 
                 <div className="addButton">
                     <BsIcons.BsFillPlusCircleFill size={50} onClick={showModal}/>
+                    <ReadFile/>
                 </div>
             :
                 <div className="addButton">
                     <BsIcons.BsFillPlusCircleFill size={50} onClick={showNotif}/>
                 </div>
+                
             }
-            
             <Modal
                 show={modal}
                 size="lg-down"
