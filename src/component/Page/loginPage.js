@@ -3,11 +3,11 @@
 import React, { useState } from "react";
 import "../../App.css";
 import { Button, Form, FormFloating } from "react-bootstrap";
-import { getLogin, getUser, setIsLogin, setRole } from "../../repository";
+import { getLogin, getUser, getUserName, setIsLogin, setRole, setUserName } from "../../repository";
 import { useLocation, useNavigate } from "react-router-dom";
 import { propTypes } from "react-bootstrap/esm/Image";
 
-function LoginPage(){
+function LoginPage(props){
 
     const test = {
         ID: "111",
@@ -53,15 +53,14 @@ function LoginPage(){
             //setSuccess(!success);
             //navigate(from, { replace: true });
         }else{
-            //setAuth({ user }); 
-            //setIsLogin(true);
             setIsLogin();
+            const name =JSON.stringify(user);
+            setUserName(name);
+            
             const role = user.accountLevel;
             setRole(role);
-            //console.log(getLogin());
-            //navigate("/Purchasing", {state: {username: user.username, accountLevel: user.accountLevel, login: true}});
-            navigate("/History");
-            //window.localStorage.setItem("token", success);
+            navigate("/proyek");
+
 
         }
     }
@@ -71,7 +70,7 @@ function LoginPage(){
             <div className="modalBackground">
                 <div className="modalContainer">
                     <form onSubmit={login}>
-                        <h2>Login</h2>
+                        <h2>dbSolution</h2>
                         <h4> ID: </h4>
                         <input type="text" name="ID" value={inputs.ID} onChange={handleInputChange} required autoComplete="off"></input>
                         <h4> Password: </h4>

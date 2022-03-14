@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../../App.css";
 import { Table, Button, CloseButton, Modal } from "react-bootstrap";
 import * as BsIcons from "react-icons/bs";
-import { addPurchasing, seeAllPurchasing, getAllMasterBarang, getRole } from "../../repository";
+import { addPurchasing, seeAllPurchasing, getAllMasterBarang, getRole, getSelectedProyek } from "../../repository";
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
@@ -13,6 +13,8 @@ function PurchasingPage(){
 
     const datePickerIconst = new Date().toLocaleDateString('en-ca');
     const location = useLocation();
+    const proyek = getSelectedProyek()
+    
     const initialState = {
         kodePO: "",
         namabarang: "",
@@ -21,7 +23,7 @@ function PurchasingPage(){
         supplier: "",
         tgl: "",
         totalHarga: 0,
-        proyek: ""
+        proyek: proyek
     }
 
     const [modal, setModal] = useState(false);
@@ -43,10 +45,20 @@ function PurchasingPage(){
 
     const purchase = async(event) =>{
         event.preventDefault();
-        addPurchasing(inputs);
-        window.alert("purchase added");
-        showModal();
-        window.location.reload();
+        if(window.confirm(
+            "confirm adding: " + 
+            "\n namabarang: " + inputs.namabarang +
+            "\n kode PO: " + inputs.kodePO + 
+            "\n harga: " + inputs.harga +
+            "\n quantity: " + inputs.quantity + 
+            "\n total harga: " + inputs.totalHarga +
+            "\n tgl: " + inputs.tgl +
+            "\n supplier: " + inputs.supplier) === true){
+                addPurchasing(inputs);
+                window.alert("purchase added");
+                showModal();
+                window.location.reload();
+            }
     }
 
     const columns = [
@@ -107,7 +119,9 @@ function PurchasingPage(){
                     tgl: barang.tgl,
                     proyek: barang.proyek
                 }
-                rowsData.push(newBarang);
+                if(newBarang.proyek === proyek){
+                    rowsData.push(newBarang);
+                }
             }
             setRows(rowsData);
         }

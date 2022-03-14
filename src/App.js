@@ -17,6 +17,8 @@ import { BrowserRouter as Router, Route, Routes, useLocation, Outlet, useNavigat
 import './App.css';
 import { getLogin, getRole, getUser } from "./repository";
 import PrivateRoutes from "./routes";
+import ActivityPage from "./component/Page/activityPage";
+import ProyekPage from "./component/Page/proyekPage";
 /*
 function LogingIn() {
     const isLogin = false;
@@ -99,14 +101,18 @@ function App() {
   useEffect(() => {
     setAccount(getLogin);
   });
+
+  const [user, setUser] = useState();
+
+
   return(
     <div className="App">
         <Routes>
            
-            <Route path="/" element={<LoginPage/>}></Route>
+            <Route path="/" element={<LoginPage />}></Route>
             <Route element={<PrivateRoutes/>}>  
-              
-            <Route path="/Master_Barang" element={<MasterBarangPage/>}></Route>
+              <Route path="/proyek" element={<ProyekPage/>}></Route>
+              <Route path="/Master_Barang" element={<MasterBarangPage/>}></Route>
               <Route path="/Purchasing" element={<PurchasingPage/>}></Route>
               <Route path='/Barang_Masuk' element ={<BarangMasukPage/>}></Route>
               <Route path="/Barang_Keluar" element={<BarangKeluarPage/>}></Route>
@@ -114,6 +120,7 @@ function App() {
               <Route path="/Barang_Sisa" element={<BarangSisa/>}></Route>
               <Route path="/History" element={<HistoryPage/>}></Route>
               <Route path="/User_List" element={<UserPage/>}></Route>
+              <Route path="/Activity" element={<ActivityPage/>}></Route>
               <Route path="*" element={<UnknownPage/>}></Route>
             </Route>
             

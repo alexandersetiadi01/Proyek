@@ -80,3 +80,7 @@ input{
 Button{
   width: flex-start;
 }
+
+.pilihProyek{
+  width: 10vw;
+}

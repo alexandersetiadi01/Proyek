@@ -1,60 +1,69 @@
 import React, { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import BootstrapTable from "react-bootstrap-table-next";
-import filterFactory, { numberFilter, textFilter } from "react-bootstrap-table2-filter";
+import filterFactory, { dateFilter, numberFilter, textFilter } from "react-bootstrap-table2-filter";
 import paginationFactory from "react-bootstrap-table2-paginator";
 import Navbar from "../Menu/navbar";
 import "../../App.css";
-import { getAllBarang, getAllBarangKeluar, getAllBarangMasuk, getinventory, getSelectedProyek } from "../../repository";
+import { getAllActivity, getSelectedProyek, seeAllActivity } from "../../repository";
 
-function InventoryPage(){
+function ActivityPage(){
 
-    const [stock, setStock] = useState([]);
+    const [data, setData] = useState([]);
     const proyek = getSelectedProyek();
     useEffect(() => {
-        async function getinventoryAPI(){
-            const data = await getinventory();
+        async function getActivityAPI(){
+            const data = await seeAllActivity();
             let rowsData = []
             for (const barang of data){
                 const newBarang = {
-                    namabarang: barang.namabarang,
-                    quantity: barang.quantity,
+                    username: barang.username,
+                    action: barang.action,
+                    tgl: barang.tgl,
                     proyek: barang.proyek
                 }
+               
                 if(newBarang.proyek === proyek){
                     rowsData.push(newBarang);
                 }
-                
             }
-            setStock(rowsData);
+            setData(rowsData);
         }
-        getinventoryAPI();
+        getActivityAPI();
     }, [])
+
+  
 
     const columns = [
         {
-            dataField: 'namabarang',
-            text: 'Nama Barang',
+            dataField: 'username',
+            text: 'nama',
             sort: true,
             filter: textFilter()
         }, 
         {
-            dataField: 'quantity',
-            text: 'Quantity',
+            dataField: 'action',
+            text: 'Activity',
             sort: true
-        }];
+        }, 
+        {
+            dataField: 'tgl',
+            Text: 'Tanggal',
+            sort: true,
+            filter: dateFilter()
+        }   
+    ];
 
     return(
         <>
         <Navbar />
-        <h2 text-align="center">Inventory</h2>
+        <h2 text-align="center">Activity</h2>
         <br/>
-        {/* total quantity = barang masuk + barang sisa - barang keluar */}
         <BootstrapTable 
-            keyField='kodemasuk' data={stock} columns={ columns } 
+            keyField='username' data={data} columns={ columns } 
             filter={ filterFactory() } pagination={paginationFactory()} striped hover/>
         </>
     );
 }
 
-export default InventoryPage;
+export default ActivityPage;

@@ -83,7 +83,7 @@ li a:hover:not(.active) {
 .nav-text a{
     text-decoration: none;
     color: azure;
-    font-size: 18px;
+    font-size: 13px;
     width: 95%;
     height: 100%;
     display: flex;

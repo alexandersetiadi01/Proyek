@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import "./navbar.css";
 import {sidebarData, sidebarDataAdmin} from "./sidebarData";
-import { setLogOut } from "../../repository";
+import { getRole, getSelectedProyek, getUserName, setLogOut } from "../../repository";
 
 function Navbar(){ 
     const [sidebar, setSidebar] = useState(false);
@@ -17,18 +17,20 @@ function Navbar(){
         navigate("/");
     }
 
+    const proyek = getSelectedProyek();
+    
     return(
     <>
         <nav className="navbar sticky-top navbar-expand navbar-blue bg-dark">
         <Link to="#" className="menu-bars">
             <FaIcons.FaBars onClick={showSidebar}/>
         </Link>  
-        <h1>(Nama Proyek)</h1>
+        <h1>{proyek}</h1>
         </nav>
         <nav className={sidebar ? 'nav-menu-active' : 'nav-menu'}>
             
             <ul classname="nav-menu-items" onClick={showSidebar}>
-                {sidebarDataAdmin.map((item, index) => {
+                {sidebarData.map((item, index) => {
                     return(
                         <li key={index} className={item.classname}>
                             <Link to={item.path}>

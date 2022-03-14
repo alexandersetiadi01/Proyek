@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_HOST = "http://localhost:8080";
+//const API_HOST = "http://localhost:8080"; 
+const API_HOST = "https://dbsolution.herokuapp.com"
 
 //master barang
 async function createBarang(barang) {
@@ -121,7 +122,7 @@ async function getHistory(){
 }
 
 async function addHistory(barang){
-    const response = await axios.get(API_HOST + "/api/history/addHistory");
+    const response = await axios.post(API_HOST + "/api/history/addHistory", barang);
 
     return response.data;
 }
@@ -169,12 +170,65 @@ async function getKodePO(namabarang){
     return response.data;
 }
 
+async function getAllActivity(){
+    const response = await axios.get(API_HOST + "/api/activity/getActivity");
+
+    return response.data;
+}
+
+async function seeAllActivity(){
+    const response = await axios.get(API_HOST + "/api/activity");
+
+    return response.data;
+}
+
+async function addActivityMasuk(activity){
+    const response = await axios.post(API_HOST + "/api/activity/addActivityMasuk", activity);
+
+    return response.data
+}
+
+async function addActivityKeluar(activity){
+    const response = await axios.post(API_HOST + "/api/activity/addActivityKeluar", activity);
+
+    return response.data
+}
+
+async function addActivitySisa(activity){
+    const response = await axios.post(API_HOST + "/api/activity/addActivitySisa", activity);
+
+    return response.data
+}
+
+async function seeAllProyek(){
+    const response = await axios.get(API_HOST + "/api/proyek");
+
+    return response.data;
+}
+
+function setSelectedProyek(proyek){
+    sessionStorage.setItem("proyek", proyek);
+}
+
+
+function getSelectedProyek(){
+    return sessionStorage.getItem("proyek");
+}
+
 function setIsLogin(){
     sessionStorage.setItem("user", true);
 }
 
 function setLogOut(){
     sessionStorage.clear();
+}
+
+function setUserName(username){
+    sessionStorage.setItem("username", username );
+}
+
+function getUserName() {
+    return JSON.parse(sessionStorage.getItem("username"));
 }
 
 function getLogin(){
@@ -189,14 +243,15 @@ function getRole(){
     return sessionStorage.getItem("role");
 }
 
-
 export{
-    createBarang, getAllMasterBarang, getMasterBarangByName, checkMasterBarang,
+    createBarang, getAllMasterBarang, getMasterBarangByName, checkMasterBarang, 
     addBarangMasuk, getAllBarangMasuk, addBarangSisa,getAllBarangSisa, getAllBarang,
     addBarangKeluar, getAllBarangKeluar,
     getinventory, inventoryKeluar, inventoryMasuk, findInventory, newInventory,
     getHistory, addHistory,
-    getUser, register, userList,
+    getUser, register, userList, setUserName, getUserName,
     seeAllPurchasing, addPurchasing, getKodePO,
-    setIsLogin, getLogin, setLogOut, setRole, getRole
+    setIsLogin, getLogin, setLogOut, setRole, getRole,
+    getAllActivity, seeAllActivity, addActivityKeluar, addActivityMasuk, addActivitySisa,
+    seeAllProyek, setSelectedProyek, getSelectedProyek
 }  

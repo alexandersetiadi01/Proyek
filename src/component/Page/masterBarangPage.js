@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
 import "../../App.css";
-import { Table, Button, CloseButton, Modal } from "react-bootstrap";
+import { Button, CloseButton, Modal } from "react-bootstrap";
 import * as BsIcons from "react-icons/bs";
-import { checkMasterBarang, createBarang, getAllMasterBarang, getRole } from "../../repository";
-import * as XLSX from 'xlsx';
+import { checkMasterBarang, createBarang, getAllMasterBarang, getRole, getSelectedProyek } from "../../repository";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import paginationFactory from "react-bootstrap-table2-paginator";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../Menu/navbar";
-import ReadFile from "../../readFile";
 
 function MasterBarangPage(){
     
     const [modal, setModal] = useState(false);
+    const proyek = getSelectedProyek();
     const navigate = useNavigate();
     const initialState = {
         //kodebarang:"",
@@ -24,8 +23,7 @@ function MasterBarangPage(){
         merk: "",  
         satuan: "",
         ukuran: "",
-        proyek: "",
-        totalQTY: 0
+        proyek: ""
     }
     const [inputs, setInputs] = useState(initialState);
     const resetInput = () => setInputs(initialState);
@@ -43,12 +41,21 @@ function MasterBarangPage(){
         if(check !== null){
             window.alert("item already exist");
         }else{
-            await createBarang(inputs);
-            window.alert("item added");
-            showModal();
-            //navigate("/Master_Barang");  
-            window.location.reload();
-           
+            if(window.confirm(
+                "confirm adding: " + 
+                "\n namabarang: " + inputs.namabarang +
+                "\n category: " + inputs.category + 
+                "\n sub category: " + inputs.subCategory + 
+                "\n type: " + inputs.type +
+                "\n merk: " + inputs.merk +
+                "\n satuan: " + inputs.satuan +
+                "\n ukuran: " + inputs.ukuran) === true){
+                    await createBarang(inputs);
+                    window.alert("item added");
+                    showModal();
+                    //navigate("/Master_Barang");  
+                    window.location.reload();
+            }
         }
 
         
@@ -125,6 +132,13 @@ function MasterBarangPage(){
         window.alert("your account have no permision to access this feature");
     }
 
+    const checkRole = () => {
+        if(getRole() === "ADMIN"){
+            return true;
+        }else{
+            return false;
+        }
+    }
 
 
     return(
@@ -135,16 +149,10 @@ function MasterBarangPage(){
             <BootstrapTable
             keyField='namabarang' data={ rows } columns={ columns } 
             filter={ filterFactory() } pagination={paginationFactory()} striped hover/>
-            {getRole() === "ADMIN" ? 
+            {checkRole() === true &&
                 <div className="addButton">
                     <BsIcons.BsFillPlusCircleFill size={50} onClick={showModal}/>
-                    <ReadFile/>
                 </div>
-            :
-                <div className="addButton">
-                    <BsIcons.BsFillPlusCircleFill size={50} onClick={showNotif}/>
-                </div>
-                
             }
             <Modal
                 show={modal}

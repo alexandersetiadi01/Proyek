@@ -6,7 +6,7 @@ import * as BsIcons from "react-icons/bs";
 import {  
     addBarangMasuk, getAllBarangMasuk, getAllMasterBarang, 
     addHistory, getKodePO, seeAllPurchasing, inventoryMasuk, 
-    findInventory, newInventory 
+    findInventory, newInventory, getUserName, addActivityMasuk, getSelectedProyek
 } from "../../repository";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
@@ -16,8 +16,11 @@ import Navbar from "../Menu/navbar";
 //import { getKodePO } from "../../../../back-end/controller/purchasingController";
 function BarangMasukPage(){
 
+    const user = getUserName();
+    
     const datePickerIconst = new Date().toLocaleDateString('en-ca');
     const navigate = useNavigate();
+    const proyek = getSelectedProyek()
     const initialState = {
         //kodebarang:"",
         namabarang: "",
@@ -27,8 +30,10 @@ function BarangMasukPage(){
         quantity: 0,  
         noSuratJalan: "",
         tgl: "",
-        status: "",
         lokasi: "",
+        action: "barang masuk",
+        username: user.username,
+        proyek: proyek
     }
 
     const [modal, setModal] = useState(false);
@@ -58,9 +63,13 @@ function BarangMasukPage(){
                     namaPenerima: barang.namaPenerima,
                     quantity: barang.quantity,  
                     tgl: barang.tgl,
-                    lokasi: barang.lokasi
+                    lokasi: barang.lokasi,
+                    proyek: barang.proyek
                 }
-                rowsData.push(newBarang);
+                if(newBarang.proyek === proyek){
+                    rowsData.push(newBarang);
+                }
+                
             }
             setRows(rowsData);
         }
@@ -77,9 +86,13 @@ function BarangMasukPage(){
             for (const barang of data){
                 const newBarang = {
                     namabarang: barang.namabarang,
+                    proyek: barang.proyek
                 }
-                optionData.push(newBarang);
+                if(newBarang.proyek === proyek){
+                    optionData.push(newBarang);
+                }
             }
+           
             setOption(optionData);
         }
         getNamaBarangAPI();
@@ -87,6 +100,7 @@ function BarangMasukPage(){
 
     const showModal = () => {
         setModal(!modal);
+        setInputs(initialState);
     };
    
     const resetInput = () => setInputs(initialState);
@@ -96,22 +110,39 @@ function BarangMasukPage(){
 
     const add = async (event) => {
         event.preventDefault();
-        await addBarangMasuk(inputs);
-        window.alert("item added as barang masuk");
-        addHistory(inputs);
-        const check = await findInventory(inputs.namabarang);
-        if(check === null) {
-            newInventory(inputs);
-            window.location.reload();
-        }else{
-            inventoryMasuk(inputs);
-            window.location.reload();
-        } 
+        if(window.confirm(
+            "confirm adding: " + 
+            "\n namabarang: " + inputs.namabarang +
+            "\n kode PO: " + inputs.kodePO + 
+            "\n surat jalan: " + inputs.noSuratJalan + 
+            "\n nama penerima: " + inputs.namaPenerima +
+            "\n quantity: " + inputs.quantity +
+            "\n tgl: " + inputs.tgl +
+            "\n lokasi: " + inputs.lokasi) === true){
+                await addBarangMasuk(inputs);
+                window.alert("item added as barang masuk");
+                //addHistory(inputs);
+                addActivityMasuk(inputs)
+                
+                const check = await findInventory(inputs.namabarang);
+                if(check === null) {
+                    newInventory(inputs);
+                    //window.alert("new inventory added");
+                    window.location.reload();
+                }else{
+                    inventoryMasuk(inputs);
+                    //window.alert("inventory updated");
+                    window.location.reload();
+                } 
+                
+            }
         
+       
         //showKonfirmasi();
         //navigate("/Barang_Masuk");
          
     }
+    
 
     const columns = 
         /*return */[
@@ -223,13 +254,13 @@ function BarangMasukPage(){
             
             <BootstrapTable keyField='kodemasuk' data={ rows } columns={ columns } 
             filter={ filterFactory() } pagination={paginationFactory()} 
-            selectRow={{
+            /*selectRow={{
                 mode: "checkbox",
                 bgColor: "red",
                 clickToSelect: {handleClickToSelect},
                 onSelect: (row, isSelect, rowIndex, e) => {
                 }
-            }}
+            }}*/
             hover/>
                     
             <div className="addButton">

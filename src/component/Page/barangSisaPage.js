@@ -3,7 +3,8 @@ import "../../App.css";
 import { Button, CloseButton, Modal } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom"
 import * as BsIcons from "react-icons/bs";
-import { getAllBarangSisa, getAllMasterBarang, getAllBarangKeluar, addBarangSisa, findInventory, newInventory, inventoryMasuk, addHistory} from "../../repository";
+import { getAllBarangSisa, getAllMasterBarang, getAllBarangKeluar, addBarangSisa, 
+    findInventory, newInventory, inventoryMasuk, addActivitySisa, addHistory, getUserName, getSelectedProyek} from "../../repository";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
 import paginationFactory from "react-bootstrap-table2-paginator";
@@ -12,7 +13,8 @@ import Navbar from "../Menu/navbar";
 function BarangSisa(){
     const datePickerIconst = new Date().toLocaleDateString('en-ca');
     const navigate = useNavigate();
-
+    const user = getUserName();
+    const proyek = getSelectedProyek()
     const initialState = {
         //kodebarang:"",
         namabarang: "",
@@ -23,7 +25,9 @@ function BarangSisa(){
         noSuratJalan: "",
         tgl: "",
         status: "",
-        lokasi: ""
+        lokasi: "",
+        username: user.username,
+        proyek: proyek
     }
 
     const columns = [
@@ -91,9 +95,13 @@ function BarangSisa(){
                     namaPenerima: barang.namaPenerima,
                     quantity: barang.quantity,  
                     tgl: barang.tgl,
-                    lokasi: barang.lokasi
+                    lokasi: barang.lokasi,
+                    proyek: barang.proyek
                 }
-                rowsData.push(newBarang);
+                if(newBarang.proyek === proyek){
+                    rowsData.push(newBarang);
+                }
+                
             }
             setRows(rowsData);
         }
@@ -110,8 +118,11 @@ function BarangSisa(){
             for (const barang of data){
                 const newBarang = {
                     namabarang: barang.namabarang,
+                    proyek: barang.proyek
                 }
-                optionData.push(newBarang);
+                if(newBarang.proyek === proyek){
+                    optionData.push(newBarang);
+                }
             }
             setOption(optionData);
         }
@@ -129,18 +140,31 @@ function BarangSisa(){
 
     const add = async (event) => {
         event.preventDefault();
-        await addBarangSisa(inputs);
-        window.alert("item added as barang sisa");
-        addHistory(inputs)
-        const check = await findInventory(inputs.namabarang);
-        if(check === null){
-            newInventory(inputs);
-            showModal();
-            window.location.reload();
-        }else{
-            inventoryMasuk(inputs);
-            window.location.reload();
-        } 
+        event.preventDefault();
+        if(window.confirm(
+            "confirm adding: " + 
+            "\n namabarang: " + inputs.namabarang +
+            "\n kode PO: " + inputs.kodePO + 
+            "\n surat jalan: " + inputs.noSuratJalan + 
+            "\n nama penerima: " + inputs.namaPenerima +
+            "\n quantity: " + inputs.quantity +
+            "\n tgl: " + inputs.tgl +
+            "\n lokasi: " + inputs.lokasi) === true){
+                 await addBarangSisa(inputs);
+                //addHistory(inputs)
+                addActivitySisa(inputs)
+                const check = await findInventory(inputs.namabarang);
+                if(check === null){
+                    newInventory(inputs);
+                    showModal();
+                    window.alert("item added as barang sisa");
+                    window.location.reload();
+                }else{
+                    inventoryMasuk(inputs);
+                    window.alert("item added as barang sisa");
+                    window.location.reload();
+                } 
+        }
         
     }
 
@@ -151,11 +175,11 @@ function BarangSisa(){
         <br/>
         <BootstrapTable keyField='kodemasuk' data={ rows } columns={ columns } 
         filter={ filterFactory() } pagination={paginationFactory()} 
-        selectRow={{
+        /*selectRow={{
             mode: "checkbox",
             clickToSelect: true,
             bgColor: "red"
-        }}
+        }}*/
         striped hover/>
 
         <div className="addButton">
