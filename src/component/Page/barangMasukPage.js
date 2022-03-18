@@ -6,7 +6,7 @@ import * as BsIcons from "react-icons/bs";
 import {  
     addBarangMasuk, getAllBarangMasuk, getAllMasterBarang, 
     addHistory, getKodePO, seeAllPurchasing, inventoryMasuk, 
-    findInventory, newInventory, getUserName, addActivityMasuk, getSelectedProyek
+    findInventory, newInventory, getUserName, addActivityMasuk, getSelectedProyek, getBarangMasukPO
 } from "../../repository";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
@@ -78,21 +78,24 @@ function BarangMasukPage(){
 
     //data master barang 
     const [options, setOption] = useState([]);
-
+    const [barang, setBarang] = useState(inputs.namabarang);
+    const[PO, setPO] = useState([]);
     useEffect(() => {
         async function getNamaBarangAPI(){
             const data = await seeAllPurchasing();
             let optionData = []
+            let POdata = []
             for (const barang of data){
                 const newBarang = {
                     namabarang: barang.namabarang,
+                    kodePO: barang.kodePO,
                     proyek: barang.proyek
                 }
                 if(newBarang.proyek === proyek){
                     optionData.push(newBarang);
                 }
+                
             }
-           
             setOption(optionData);
         }
         getNamaBarangAPI();
@@ -102,10 +105,28 @@ function BarangMasukPage(){
         setModal(!modal);
         setInputs(initialState);
     };
-   
+    useEffect(() => {
+        async function getPO(){
+            const data = await getKodePO();
+            let optionData = []
+            for (const barang of data){
+                const newBarang = {
+                    kodePO: barang.kodePO,
+                    proyek: barang.proyek
+                }
+                if(newBarang.proyek === proyek){
+                    optionData.push(newBarang);
+                }
+          
+            }
+            setPO(optionData);
+        }
+        getPO();
+    }, [])
     const resetInput = () => setInputs(initialState);
     const handleInputChange = (event) => {
         setInputs({...inputs, [event.target.name]: event.target.value});
+        
     };
 
     const add = async (event) => {
@@ -220,25 +241,6 @@ function BarangMasukPage(){
         setKonfirmasi(!konfirmasi);
     }
 
-    const[PO, setPO] = useState([]);
-/*
-    useEffect(() => {
-        async function getKodePOAPI(){
-            const data = await getKodePO(inputs);
-            let optionData = []
-            for (const barang of data){
-                const newBarang = {
-                    kodePO: barang.kodePO,
-                    quantity: barang.quantity
-                }
-                optionData.push(newBarang);
-            }
-            setPO(optionData);
-        }
-        getKodePOAPI();
-    }, [])
-*/
-
     return(
         <>
           <Navbar />
@@ -279,29 +281,29 @@ function BarangMasukPage(){
                 <Modal.Body>
                     <form onSubmit={add}>
                         <h4>Nama Barang:</h4>
-                        <input type="text" list="namabarang" name="namabarang" value={inputs.namabarang} onChange={handleInputChange} required autoComplete="off"></input>
+                        <input type="text" class="form-control" list="namabarang" name="namabarang" value={inputs.namabarang} onChange={handleInputChange} required autoComplete="off"></input>
                         <datalist id="namabarang" name="namabarang">
                             {options.map((item, index) => 
                                 <option key={index}>{item.namabarang}</option>
                             )}
                         </datalist>
                         <h4>Nama Penerima:</h4>
-                        <input type="text" name="namaPenerima" value={inputs.namaPenerima} onChange={handleInputChange} required/>
+                        <input type="text" class="form-control" name="namaPenerima" value={inputs.namaPenerima} onChange={handleInputChange} required/>
                         <h4>No. PO</h4>
-                        <input type="text" name="kodePO" value={inputs.kodePO} onChange={handleInputChange} required autoComplete="off"></input>
-                        {/*<datalist id="kodePO" name="kodePO">
+                        <input type="text" class="form-control" list="kodePO" name="kodePO" value={inputs.kodePO} onChange={handleInputChange} required autoComplete="off"></input>
+                        <datalist id="kodePO" name="kodePO">
                             {PO.map((item, index) => 
                                 <option key={index}>{item.kodePO}</option>
                             )}
-                            </datalist>*/}
+                        </datalist>
                         <h4>Quantity:</h4>
-                        <input type="number" name="quantity" value={inputs.quantity } onChange={handleInputChange} min="0" required/>
+                        <input type="number" class="form-control" name="quantity" value={inputs.quantity } onChange={handleInputChange} min="0" required/>
                         <h4>No Surat Jalan:</h4>
-                        <input type="text" name="noSuratJalan" value={inputs.noSuratJalan} onChange={handleInputChange} required/>
+                        <input type="text" class="form-control" name="noSuratJalan" value={inputs.noSuratJalan} onChange={handleInputChange} required/>
                         <h4>Tanggal Masuk:</h4>
-                        <input type="date" name="tgl" value={inputs.tgl} onChange={handleInputChange} max={datePickerIconst} required/>
+                        <input type="date" class="form-control" name="tgl" value={inputs.tgl} onChange={handleInputChange} max={datePickerIconst} required/>
                         <h4>Lokasi:</h4>
-                        <input type="text" name="lokasi" value={inputs.lokasi} onChange={handleInputChange} required/>
+                        <input type="text" class="form-control" name="lokasi" value={inputs.lokasi} onChange={handleInputChange} required/>
                         <br/><br/>
                         <div className="twoside">
                             <Button class="btn btn-danger" onClick={resetInput}>Reset</Button>

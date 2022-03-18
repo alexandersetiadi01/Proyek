@@ -36,6 +36,12 @@ async function addBarangMasuk(barang) {
     return response.data;
 }
 
+async function getBarangMasukPO(namabarang){
+    const response = await axios.get(API_HOST + "/api/barangMasuk/getPO", {params:{namabarang}});
+
+    return response.data;
+}
+
 async function addBarangSisa(barang) {
     const response = await axios.post(API_HOST + "/api/barangMasuk/addbarangSisa", barang);
   
@@ -164,12 +170,13 @@ async function addPurchasing(barang){
     return response.data;
 }
 
-async function getKodePO(namabarang){
-    const response = await axios.get(API_HOST + "/api/purchasing/KodePO", {params: {namabarang}});
+async function getKodePO(){
+    const response = await axios.get(API_HOST + "/api/purchasing/getPO");
 
     return response.data;
 }
 
+//activity
 async function getAllActivity(){
     const response = await axios.get(API_HOST + "/api/activity/getActivity");
 
@@ -200,16 +207,39 @@ async function addActivitySisa(activity){
     return response.data
 }
 
+//supplier
+async function addSupplier(supplier){
+    const response = await axios.post(API_HOST + "/api/supplier", supplier);
+
+    return response.data
+}
+
+
+async function getAllSupplier(){
+    const response = await axios.get(API_HOST + "/api/supplier");
+
+    return response.data
+}
+
+async function selectSupplier(namaSupplier){
+    const response = await axios.get(API_HOST + "/api/supplier/select", {params: {namaSupplier}});
+
+    return response.data;
+}
+
+//proyek
 async function seeAllProyek(){
     const response = await axios.get(API_HOST + "/api/proyek");
 
     return response.data;
 }
 
+
+
+//saving data locally
 function setSelectedProyek(proyek){
     sessionStorage.setItem("proyek", proyek);
 }
-
 
 function getSelectedProyek(){
     return sessionStorage.getItem("proyek");
@@ -245,7 +275,7 @@ function getRole(){
 
 export{
     createBarang, getAllMasterBarang, getMasterBarangByName, checkMasterBarang, 
-    addBarangMasuk, getAllBarangMasuk, addBarangSisa,getAllBarangSisa, getAllBarang,
+    addBarangMasuk, getAllBarangMasuk, addBarangSisa,getAllBarangSisa, getAllBarang, getBarangMasukPO,
     addBarangKeluar, getAllBarangKeluar,
     getinventory, inventoryKeluar, inventoryMasuk, findInventory, newInventory,
     getHistory, addHistory,
@@ -253,5 +283,6 @@ export{
     seeAllPurchasing, addPurchasing, getKodePO,
     setIsLogin, getLogin, setLogOut, setRole, getRole,
     getAllActivity, seeAllActivity, addActivityKeluar, addActivityMasuk, addActivitySisa,
-    seeAllProyek, setSelectedProyek, getSelectedProyek
+    seeAllProyek, setSelectedProyek, getSelectedProyek,
+    addSupplier, getAllSupplier, selectSupplier
 }  

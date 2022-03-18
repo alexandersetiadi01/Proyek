@@ -133,7 +133,7 @@ function MasterBarangPage(){
     }
 
     const checkRole = () => {
-        if(getRole() === "ADMIN"){
+        if(getRole() === "ADMIN" || getRole() === "PURCHASING"){
             return true;
         }else{
             return false;

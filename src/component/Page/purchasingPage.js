@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../../App.css";
 import { Table, Button, CloseButton, Modal } from "react-bootstrap";
 import * as BsIcons from "react-icons/bs";
-import { addPurchasing, seeAllPurchasing, getAllMasterBarang, getRole, getSelectedProyek } from "../../repository";
+import { addPurchasing, seeAllPurchasing, getAllMasterBarang, getRole, getSelectedProyek, getAllSupplier, getKodePO, selectSupplier } from "../../repository";
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
@@ -14,7 +14,7 @@ function PurchasingPage(){
     const datePickerIconst = new Date().toLocaleDateString('en-ca');
     const location = useLocation();
     const proyek = getSelectedProyek()
-    
+    const [suppliers, setSuppliers] = useState([]);
     const initialState = {
         kodePO: "",
         namabarang: "",
@@ -33,8 +33,11 @@ function PurchasingPage(){
 
     const [inputs, setInputs] = useState(initialState);
 
-    const handleInputChange = (event) => {
-        setInputs({...inputs, [event.target.name]: event.target.value});
+    const handleInputChange = async (event) => {
+        setInputs({...inputs, [event.target.name]: event.target.value});   
+       // const supplier = await selectSupplier(inputs.supplier);
+       // console.log('code: ' + supplier.code)
+        
     };
 
     const calculating = inputs.harga * inputs.quantity;
@@ -49,9 +52,8 @@ function PurchasingPage(){
             "confirm adding: " + 
             "\n namabarang: " + inputs.namabarang +
             "\n kode PO: " + inputs.kodePO + 
-            "\n harga: " + inputs.harga +
+            "\n harga satuan: " + inputs.harga +
             "\n quantity: " + inputs.quantity + 
-            "\n total harga: " + inputs.totalHarga +
             "\n tgl: " + inputs.tgl +
             "\n supplier: " + inputs.supplier) === true){
                 addPurchasing(inputs);
@@ -69,7 +71,7 @@ function PurchasingPage(){
         },
         {
             dataField: 'namabarang',
-            text: 'Nama Barang',
+            text: 'Barang',
             sort: true,
             filter: textFilter()
         },
@@ -143,9 +145,46 @@ function PurchasingPage(){
         }
         getNamaMasterBarang();
     }, [])
+    const [PO, setPO] = useState([]);
+    useEffect(() => {
+        async function getPO(){
+            const data = await getKodePO();
+            let optionData = []
+            for (const barang of data){
+                const newBarang = {
+                    kodePO: barang.kodePO,
+                    proyek: barang.proyek
+                }
+                if(newBarang.proyek === proyek){
+                    optionData.push(newBarang);
+                }
+          
+            }
+            setPO(optionData);
+        }
+        getPO();
+    }, [])
+
+    useEffect(() => {
+        async function getSupplierAPI(){
+            const data = await getAllSupplier()
+            let rowsData = []
+            for (const barang of data){
+                const newBarang = {
+                    namaSupplier: barang.namaSupplier,
+                    Pic: barang.Pic, 
+                    telp: barang.telp,
+                    code: barang.code,
+                }
+                rowsData.push(newBarang);
+            }
+            setSuppliers(rowsData);
+        }
+        getSupplierAPI();
+    }, [])
 
     const checkRole = () => {
-        if(getRole() === "ADMIN"){
+        if(getRole() === "ADMIN" || getRole() === "PURCHASING"){
             return true;
         }else{
             return false;
@@ -181,23 +220,41 @@ function PurchasingPage(){
                 </Modal.Header>
                 <Modal.Body>
                     <form onSubmit={purchase}>
-                        <h4>No PO:</h4>
-                        <input type="text" name="kodePO" value={inputs.kodePO} onChange={handleInputChange} required></input>
+                    {/*<div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1">@</span>
+                    </div>
+                    <input type="text" class="form-control" name="kodePO" value={inputs.kodePO} onChange={handleInputChange} required></input>
+          </div>*/}
                         <h4>Nama Barang</h4>
-                        <input type="text" list="namabarang" name="namabarang" value={inputs.namabarang} onChange={handleInputChange} required autoComplete="off"></input>
+                        <input type="text" class="form-control" list="namabarang" name="namabarang" value={inputs.namabarang} onChange={handleInputChange} required autoComplete="off"></input>
                             <datalist id="namabarang" name="namabarang">
                                 {options.map((item, index) => 
                                     <option key={index}>{item.namabarang}</option>
                                 )}
                             </datalist>
                         <h4>Quantity:</h4>
-                        <input type="number" name="quantity" value={inputs.quantity} onChange={handleInputChange} min="0"></input>
+                        <input type="number" class="form-control" name="quantity" value={inputs.quantity} onChange={handleInputChange} min="0"></input>
                         <h4>Harga:</h4>
-                        <input type="number" name="harga" value={inputs.harga} onChange={handleInputChange} min="0"></input>
+                        <input type="number" class="form-control" name="harga" value={inputs.harga} onChange={handleInputChange} min="0"></input>
                         <h4>supplier:</h4>
-                        <input type="text" name="supplier" value={inputs.supplier} onChange={handleInputChange} required></input>
+                        <select class="form-control" value={inputs.supplier} name="supplier" onChange={handleInputChange} required>
+                            <option>pilih supplier</option>
+                                    {suppliers.map((item, index) => 
+                                        <option key={index}>{item.namaSupplier}</option>
+                                    )}
+                        </select>
+                        <h4>No PO:</h4> 
+                        <input type="text" class="form-control" list="kodePO" name="kodePO" value={inputs.kodePO} onChange={handleInputChange} 
+                        required autoComplete="off" placeholder="pilih singkatan supplier untuk awalan kode PO"></input>
+                        <datalist id="kodePO" name="kodePO">
+                            {suppliers.map((item, index) => 
+                                <option key={index}>{item.code}</option>
+                            )}
+                        </datalist>
+                        {/*<input type="text" name="supplier" value={inputs.supplier} onChange={handleInputChange} required></input>*/}
                         <h4>Tanggal:</h4>
-                            <input type="date" name="tgl" value={inputs.tgl} onChange={handleInputChange} 
+                            <input type="date" class="form-control" name="tgl" value={inputs.tgl} onChange={handleInputChange} 
                             max={datePickerIconst} required></input>                        
                         <button type="submit" hidden></button>
                         <br/><br/>

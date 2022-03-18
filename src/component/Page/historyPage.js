@@ -3,12 +3,12 @@ import { Table } from "react-bootstrap";
 import BootstrapTable from "react-bootstrap-table-next";
 import filterFactory, { dateFilter, textFilter } from "react-bootstrap-table2-filter";
 import paginationFactory from "react-bootstrap-table2-paginator";
-import { getAllBarang, getAllBarangKeluar, getHistory } from "../../repository";
+import { getAllBarang, getAllBarangKeluar, getHistory, getSelectedProyek } from "../../repository";
 import Navbar from "../Menu/navbar";
 function HistoryPage(){
 
     const [data, setData] = useState([]);
-
+    const proyek = getSelectedProyek();
     useEffect(() => {
         async function getHistoryAPI(){
             const dataBarangMasuk = await getAllBarang();
@@ -21,9 +21,12 @@ function HistoryPage(){
                     quantity: barang.quantity,  
                     tgl: barang.tgl,
                     lokasi: barang.lokasi,
-                    status: barang.status
+                    status: barang.status,
+                    proyek: barang.proyek
                 }
-                rowsData.push(newBarang);
+                if(newBarang.proyek === proyek){
+                    rowsData.push(newBarang);
+                }
             }
             const dataBarangKeluar = await getAllBarangKeluar();
             for (const barang of dataBarangKeluar){
@@ -34,9 +37,13 @@ function HistoryPage(){
                     quantity: barang.quantity,  
                     tgl: barang.tgl,
                     lokasi: barang.lokasi,
-                    status: barang.status
+                    status: barang.status,
+                    proyek: barang.proyek
                 }
-                rowsData.push(newBarang);
+                if(newBarang.proyek === proyek){
+                    rowsData.push(newBarang);
+                }
+               
             }
             setData(rowsData);
         }

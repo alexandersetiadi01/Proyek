@@ -14,7 +14,7 @@ function BarangSisa(){
     const datePickerIconst = new Date().toLocaleDateString('en-ca');
     const navigate = useNavigate();
     const user = getUserName();
-    const proyek = getSelectedProyek()
+    const proyek = getSelectedProyek();
     const initialState = {
         //kodebarang:"",
         namabarang: "",

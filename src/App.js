@@ -19,6 +19,7 @@ import { getLogin, getRole, getUser } from "./repository";
 import PrivateRoutes from "./routes";
 import ActivityPage from "./component/Page/activityPage";
 import ProyekPage from "./component/Page/proyekPage";
+import SupplierPage from "./component/Page/supplierPage";
 /*
 function LogingIn() {
     const isLogin = false;
@@ -121,6 +122,7 @@ function App() {
               <Route path="/History" element={<HistoryPage/>}></Route>
               <Route path="/User_List" element={<UserPage/>}></Route>
               <Route path="/Activity" element={<ActivityPage/>}></Route>
+              <Route path="/Supplier" element={<SupplierPage/>}></Route>
               <Route path="*" element={<UnknownPage/>}></Route>
             </Route>
             

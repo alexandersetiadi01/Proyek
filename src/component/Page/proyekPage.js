@@ -52,7 +52,7 @@ function ProyekPage() {
                 <div className="modalContainer">
                     <h2>Pilih Proyek</h2>
                         <form onSubmit={selectProyek}>
-                            <select className="pilihProyek" name="namaProyek" value={input.namaProyek} onChange={handleInputChange} required>
+                            <select className="pilihProyek" class="form-control" name="namaProyek" value={input.namaProyek} onChange={handleInputChange} required>
                                 <option value="">pilih proyek</option>
                                 {proyek.map((item, index) => 
                                     <option value={item.namaProyek}>{item.namaProyek}</option>

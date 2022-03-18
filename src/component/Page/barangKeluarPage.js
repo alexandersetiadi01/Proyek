@@ -183,23 +183,23 @@ function BarangKeluarPage(){
                 </Modal.Header>
                 <Modal.Body>
                     <form onSubmit={keluarinBarang}>
-                            <br/>
+                            
                             <h4>Nama Barang:</h4>
-                            <input type="text" list="namabarang" name="namabarang" value={inputs.namabarang} onChange={handleInputChange} required autoComplete="off"></input>
+                            <input type="text" class="form-control" list="namabarang" name="namabarang" value={inputs.namabarang} onChange={handleInputChange} required autoComplete="off"></input>
                             <datalist id="namabarang" name="namabarang">
                                 {options.map((item, index) => 
                                     <option key={index}>{item.namabarang}</option>
                                 )}
                             </datalist>
                             <h4>Quantity:</h4>
-                            <input type="number" name="quantity" value={inputs.quantity} onChange={handleInputChange} min="0" required></input>
+                            <input type="number" class="form-control" name="quantity" value={inputs.quantity} onChange={handleInputChange} min="0" required></input>
                             <h4>Nama Pengambil:</h4>
-                            <input type="text" name="namaPengambil" value={inputs.namaPengambil} onChange={handleInputChange} required></input>
+                            <input type="text" class="form-control" name="namaPengambil" value={inputs.namaPengambil} onChange={handleInputChange} required></input>
                             {/*<h4>Progress:</h4>
                             <input type="number" name="progress" value={inputs.progress} onChange={handleInputChange} min="0" max={inputs.quantity}></input>
                                 */}
                             <h4>Tanggal:</h4>
-                            <input type="date" name="tgl" value={inputs.tgl} onChange={handleInputChange} max={datePickerIconst} required></input>
+                            <input type="date" class="form-control" name="tgl" value={inputs.tgl} onChange={handleInputChange} max={datePickerIconst} required></input>
                             <br/><br/>
                             <div className="twoside">
                             <Button class="btn btn-danger" onClick={resetInput}>Reset</Button>

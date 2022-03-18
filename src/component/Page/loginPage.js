@@ -59,6 +59,7 @@ function LoginPage(props){
             
             const role = user.accountLevel;
             setRole(role);
+            //console.log(inputs.ID);
             navigate("/proyek");
 
 

@@ -42,6 +42,11 @@ export const sidebarData = [
         classname: 'nav-text'
     },
     {
+        title: 'Supplier',
+        path: '/Supplier',
+        classname: 'nav-text'
+    },
+    {
         title: 'User List',
         path: '/User_List',
         classname:'nav-text'

@@ -102,15 +102,17 @@ function UserPage(){
                 <Modal.Body>
                 <form onSubmit={addUser}>
                     <h4>username:</h4>
-                    <input type="text" value={user.username} name="username" onChange={handleInputChange} required></input>
+                    <input type="text" class="form-control" value={user.username} name="username" onChange={handleInputChange} required></input>
                     <h4>ID:</h4>
-                    <input type="text" value={user.ID} name="ID" onChange={handleInputChange}required></input>
+                    <input type="text" class="form-control" value={user.ID} name="ID" onChange={handleInputChange}required></input>
                     <h4>password:</h4>
-                    <input type="text" value={user.password} name="password" onChange={handleInputChange}required></input>
+                    <input type="text" class="form-control" value={user.password} name="password" onChange={handleInputChange}required></input>
                     <h4>accountLevel:</h4>
                     <select name="accountLevel" value={user.accountLevel} onChange={handleInputChange} required>
                         <option value="ADMIN">ADMIN</option>
                         <option value="USER">USER</option>
+                        <option value="LOGISTIK">LOGISTIK</option>
+                        <option value="PURCHASING">PURCHASING</option>
                     </select>
                 
                     <br/><br/>
