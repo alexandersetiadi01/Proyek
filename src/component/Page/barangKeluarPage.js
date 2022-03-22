@@ -2,7 +2,7 @@ import React, {useState, useEffect, Fragment} from "react";
 import { Button, CloseButton, Modal } from "react-bootstrap";
 import * as BsIcons from "react-icons/bs";
 import { addBarangKeluar, getAllBarangKeluar, getAllBarangMasuk, addHistory, 
-    findInventory, newInventory, inventoryKeluar, addActivityKeluar, getUserName, getSelectedProyek } from "../../repository";
+    findInventory, newInventory, inventoryKeluar, addActivityKeluar, getUserName, getSelectedProyek, seeAllProyek } from "../../repository";
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
@@ -25,7 +25,9 @@ function BarangKeluarPage(){
         progress: "",  
         tgl: "",
         proyek: proyek,
-        username: user.username
+        username: user.username,
+        keterangan: '',
+        tujuan: ''
     }
     const [inputs, setInputs] = useState(initialState);
     const showModal = () => {
@@ -40,28 +42,36 @@ function BarangKeluarPage(){
     const keluarinBarang = async (event) => {
         event.preventDefault();
         event.preventDefault();
-        if(window.confirm(
-            "confirm adding: " + 
-            "\n namabarang: " + inputs.namabarang +
-            "\n kode keluar: " + inputs.kodeKeluar + 
-            "\n nama pengambil: " + inputs.namaPengambil +
-            "\n quantity: " + inputs.quantity +
-            "\n tgl: " + inputs.tgl) === true){
-                const check = await findInventory(inputs.namabarang);
-                if(check === null) {
-                    console.log("not enough item in inventory");
-                    //newInventory(inputs);
-                    //window.location.reload();
-                }else{
-                    await addBarangKeluar(inputs);
-                    window.alert("item added as barang keluar");
-                    //addHistory(inputs);
-                    inventoryKeluar(inputs);
-                    addActivityKeluar(inputs)
-                    showModal();
-                    window.location.reload();
-                } 
+        const check = await findInventory(inputs.namabarang);
+        if(check.quantity >= inputs.quantity){
+            if(window.confirm(
+                "confirm adding: " + 
+                "\n namabarang: " + inputs.namabarang +
+                "\n kode keluar: " + inputs.kodeKeluar + 
+                "\n nama pengambil: " + inputs.namaPengambil +
+                "\n quantity: " + inputs.quantity +
+                "\n tgl: " + inputs.tgl + 
+                "\n keterangan: " + inputs.keterangan + 
+                "\n tujuan: " + inputs.tujuan) === true){
+                    
+                    if(check === null) {
+                        console.log("not enough item in inventory");
+                        //newInventory(inputs);
+                        //window.location.reload();
+                    }else{
+                        await addBarangKeluar(inputs);
+                        window.alert("item added as barang keluar");
+                        //addHistory(inputs);
+                        inventoryKeluar(inputs);
+                        addActivityKeluar(inputs)
+                        showModal();
+                        window.location.reload();
+                    } 
+            }
+        }else{
+            window.alert("jumlah barang di inventory tidak cukup")
         }
+        
     }
 
     const [rows, setRows] = useState([]);
@@ -83,7 +93,9 @@ function BarangKeluarPage(){
                     namaPengambil: barang.namaPengambil,
                     quantity: barang.quantity,
                     tgl: barang.tgl,
-                    proyek: barang.proyek
+                    proyek: barang.proyek,
+                    keterangan: barang.keterangan,
+                    tujuan: barang.tujuan
                 }
                 if(newBarang.proyek === proyek){
                     rowsData.push(newBarang);
@@ -116,6 +128,23 @@ function BarangKeluarPage(){
         getNamaBarangMasukAPI();
     }, [])
 
+    const [tujuanProyek, setTujuanProyek] = useState([]);
+    useEffect(() => {
+        async function getProyekAPI(){
+            const datas = await seeAllProyek()
+            let rowsData = []
+            for (const data of datas){
+                const newData = {
+                    namaProyek: data.namaProyek,
+                   
+                }
+                rowsData.push(newData);
+            }
+            setTujuanProyek(rowsData);
+        }
+        getProyekAPI();
+    }, [])
+    
     const columns = [
         {
             dataField: 'kodeKeluar',
@@ -148,7 +177,20 @@ function BarangKeluarPage(){
             text: 'Tgl',
             filter: dateFilter(),
             sort: true
+        },
+        {
+            dataField: 'keterangan',
+            text: 'Keterangan',
+        },
+        {
+            dataField: 'tujuan',
+            text: 'Tujuan'
         }];
+    const [pindah, setPindah] = useState(false);
+    
+    const pindahBarang = () => {
+        setPindah(!pindah);
+    }
 
     return(
         <>
@@ -169,9 +211,10 @@ function BarangKeluarPage(){
             bgColor: "red"
         }}*/
         striped hover/>
-        <div className="addButton">
-            <BsIcons.BsFillPlusCircleFill size={50} onClick={showModal}/>
+        <div>
+            <BsIcons.BsFillPlusCircleFill className="addButton" size={50} onClick={showModal}/>
         </div>  
+        
             <Modal 
                 show={modal}
                 size="lg-down"
@@ -199,7 +242,34 @@ function BarangKeluarPage(){
                             <input type="number" name="progress" value={inputs.progress} onChange={handleInputChange} min="0" max={inputs.quantity}></input>
                                 */}
                             <h4>Tanggal:</h4>
-                            <input type="date" class="form-control" name="tgl" value={inputs.tgl} onChange={handleInputChange} max={datePickerIconst} required></input>
+                            <input type="date" class="form-control" name="tgl" value={inputs.tgl} onChange={handleInputChange}
+                             min={datePickerIconst} max={datePickerIconst} required></input>
+                            <br/>
+                            <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" onClick={pindahBarang}></input>
+                            <label class="form-check-label" for="flexCheckChecked">
+                                pindah proyek
+                            </label>
+                            </div>
+                            { pindah ?
+                            <>
+                            <h4>Keterangan:</h4>
+                            <input type="text" class="form-control" name="keterangan" value={inputs.keterangan} onChange={handleInputChange} 
+                            autoComplete='off' required/>
+                            <h4>Proyek Tujuan:</h4>
+                            <select className="pilihProyek" class="form-control" name="tujuan" value={inputs.tujuan} onChange={handleInputChange} required>
+                                <option value='' disabled>pilih proyek</option>
+                                {tujuanProyek.map((item) => 
+                                    <option value={item.namaProyek}>{item.namaProyek}</option>
+                                )}
+                            </select>
+                            </>
+                            :
+                            <>
+                            <h4>Keterangan:</h4>
+                            <input type="text" class="form-control" name="keterangan" value={inputs.keterangan} onChange={handleInputChange} autoComplete='off' />
+                            </>
+                            }
                             <br/><br/>
                             <div className="twoside">
                             <Button class="btn btn-danger" onClick={resetInput}>Reset</Button>

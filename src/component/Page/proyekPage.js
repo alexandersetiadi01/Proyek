@@ -10,9 +10,8 @@ function ProyekPage() {
         namaProyek: ""
     }
 
-    const [proyek, setProyek] = useState([]);
     const [input, setInput] = useState(initialState);
-
+    const [proyek, setProyek] = useState([]);
     useEffect(() => {
         async function getProyekAPI(){
             const datas = await seeAllProyek()
@@ -53,7 +52,7 @@ function ProyekPage() {
                     <h2>Pilih Proyek</h2>
                         <form onSubmit={selectProyek}>
                             <select className="pilihProyek" class="form-control" name="namaProyek" value={input.namaProyek} onChange={handleInputChange} required>
-                                <option value="">pilih proyek</option>
+                                <option value="" disabled>pilih proyek</option>
                                 {proyek.map((item, index) => 
                                     <option value={item.namaProyek}>{item.namaProyek}</option>
                                 )}

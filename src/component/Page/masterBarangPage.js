@@ -145,13 +145,13 @@ function MasterBarangPage(){
         <>  
           <Navbar />
             <h2 text-align="center">Master Barang</h2>
-            
+            <br/>
             <BootstrapTable
             keyField='namabarang' data={ rows } columns={ columns } 
             filter={ filterFactory() } pagination={paginationFactory()} striped hover/>
             {checkRole() === true &&
-                <div className="addButton">
-                    <BsIcons.BsFillPlusCircleFill size={50} onClick={showModal}/>
+                <div className="forButton">
+                <BsIcons.BsFillPlusCircleFill className="addButton" size={50} onClick={showModal}/>
                 </div>
             }
             <Modal

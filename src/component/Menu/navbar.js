@@ -18,6 +18,7 @@ function Navbar(){
     }
 
     const proyek = getSelectedProyek();
+    const user =getUserName().username;
     
     return(
     <>
@@ -25,7 +26,7 @@ function Navbar(){
         <Link to="#" className="menu-bars">
             <FaIcons.FaBars onClick={showSidebar}/>
         </Link>  
-        <h1>{proyek}</h1>
+        <h1>{proyek} - {user}</h1>
         </nav>
         <nav className={sidebar ? 'nav-menu-active' : 'nav-menu'}>
             

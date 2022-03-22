@@ -3,7 +3,7 @@ import { Table } from "react-bootstrap";
 import BootstrapTable from "react-bootstrap-table-next";
 import filterFactory, { dateFilter, textFilter } from "react-bootstrap-table2-filter";
 import paginationFactory from "react-bootstrap-table2-paginator";
-import { getAllBarang, getAllBarangKeluar, getHistory, getSelectedProyek } from "../../repository";
+import { getAllBarangKeluar, getAllBarangMasuk, getAllBarangSisa, getHistory, getSelectedProyek } from "../../repository";
 import Navbar from "../Menu/navbar";
 function HistoryPage(){
 
@@ -11,7 +11,7 @@ function HistoryPage(){
     const proyek = getSelectedProyek();
     useEffect(() => {
         async function getHistoryAPI(){
-            const dataBarangMasuk = await getAllBarang();
+            const dataBarangMasuk = await getAllBarangMasuk();
             let rowsData = []
             for (const barang of dataBarangMasuk){
                 const newBarang = {
@@ -45,11 +45,29 @@ function HistoryPage(){
                 }
                
             }
+            const dataBarangSisa = await getAllBarangSisa();
+            for (const barang of dataBarangSisa){
+                const newBarang = {
+                    //kodebarang: barang.kodebarang,
+                    namabarang: barang.namabarang,
+                    kodePO: barang.kodePO,
+                    quantity: barang.quantity,  
+                    tgl: barang.tgl,
+                    lokasi: barang.lokasi,
+                    status: barang.status,
+                    proyek: barang.proyek
+                }
+                if(newBarang.proyek === proyek){
+                    rowsData.push(newBarang);
+                }
+               
+            }
             setData(rowsData);
         }
         getHistoryAPI();
     }, [])
 
+    //console.log(typeof(getSelectedProyek()))
     const columns = [
         {
             dataField: 'namabarang',

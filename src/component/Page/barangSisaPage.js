@@ -4,7 +4,7 @@ import { Button, CloseButton, Modal } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom"
 import * as BsIcons from "react-icons/bs";
 import { getAllBarangSisa, getAllMasterBarang, getAllBarangKeluar, addBarangSisa, 
-    findInventory, newInventory, inventoryMasuk, addActivitySisa, addHistory, getUserName, getSelectedProyek} from "../../repository";
+    findInventory, newInventory, inventoryMasuk, addActivitySisa, addHistory, getUserName, getSelectedProyek, getAllSupplier} from "../../repository";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
 import paginationFactory from "react-bootstrap-table2-paginator";
@@ -22,18 +22,20 @@ function BarangSisa(){
         kodePO: "",
         namaPenerima: "",
         quantity: "",  
-        noSuratJalan: "",
+        noSuratJalan1: "",
+        noSuratJalan2: "",
         tgl: "",
         status: "",
         lokasi: "",
         username: user.username,
-        proyek: proyek
+        proyek: proyek,
+        keterangan: ''
     }
 
     const columns = [
         {
-            dataField: 'kodemasuk',
-            text: 'Kode Masuk',
+            dataField: 'kodesisa',
+            text: 'Kode Sisa',
             sort: true
         }, 
         {
@@ -41,10 +43,6 @@ function BarangSisa(){
             text: 'Nama Barang',
             filter: textFilter(),
             sort: true
-        }, 
-        {
-            dataField: 'kodePO',
-            text: 'Kode PO',
         },
         {
             dataField: 'namaPenerima',
@@ -56,11 +54,7 @@ function BarangSisa(){
             text: 'Qty',
             sort: true
         },
-        {
-            dataField: 'noSuratJalan',
-            text: 'No Surat Jalan',
-    
-        },
+        
         {
             dataField: 'tgl',
             text: 'Tgl',
@@ -72,8 +66,11 @@ function BarangSisa(){
             text: 'Lokasi',
             filter: textFilter(),
             sort: true
-        }
-    ];
+        },
+        {
+            dataField: 'keterangan',
+            text: 'Keterangan'
+        }];
 
     const [modal, setModal] = useState(false);
 
@@ -89,14 +86,15 @@ function BarangSisa(){
                 const newBarang = {
                     //kodebarang: barang.kodebarang,
                     namabarang: barang.namabarang,
-                    kodemasuk: barang.kodemasuk, 
+                    kodesisa: barang.kodeSisa, 
                     kodePO: barang.kodePO,
                     noSuratJalan: barang.noSuratJalan,
                     namaPenerima: barang.namaPenerima,
                     quantity: barang.quantity,  
                     tgl: barang.tgl,
                     lokasi: barang.lokasi,
-                    proyek: barang.proyek
+                    proyek: barang.proyek,
+                    keterangan: barang.keterangan
                 }
                 if(newBarang.proyek === proyek){
                     rowsData.push(newBarang);
@@ -144,12 +142,11 @@ function BarangSisa(){
         if(window.confirm(
             "confirm adding: " + 
             "\n namabarang: " + inputs.namabarang +
-            "\n kode PO: " + inputs.kodePO + 
-            "\n surat jalan: " + inputs.noSuratJalan + 
             "\n nama penerima: " + inputs.namaPenerima +
             "\n quantity: " + inputs.quantity +
             "\n tgl: " + inputs.tgl +
-            "\n lokasi: " + inputs.lokasi) === true){
+            "\n lokasi: " + inputs.lokasi + 
+            "\n keterangan: " + inputs.keterangan) === true){
                  await addBarangSisa(inputs);
                 //addHistory(inputs)
                 addActivitySisa(inputs)
@@ -168,6 +165,26 @@ function BarangSisa(){
         
     }
 
+    const [suppliers, setSuppliers] = useState([]);
+    
+    useEffect(() => {
+        async function getSupplierAPI(){
+            const data = await getAllSupplier()
+            let rowsData = []
+            for (const barang of data){
+                const newBarang = {
+                    namaSupplier: barang.namaSupplier,
+                    Pic: barang.Pic, 
+                    telp: barang.telp,
+                    code: barang.code,
+                }
+                rowsData.push(newBarang);
+            }
+            setSuppliers(rowsData);
+        }
+        getSupplierAPI();
+    }, [])
+
     return(
         <>
         <Navbar />
@@ -183,8 +200,8 @@ function BarangSisa(){
         striped hover/>
 
         <div className="addButton">
-                <BsIcons.BsFillPlusCircleFill size={50} onClick={showModal}/>
-            </div>  
+            <BsIcons.BsFillPlusCircleFill size={50} onClick={showModal}/>
+        </div>  
         
                 <Modal 
                 show={modal}
@@ -198,24 +215,29 @@ function BarangSisa(){
                 <Modal.Body>
                     <form onSubmit={add}>
                         <h4>Nama Barang:</h4>
-                        <input type="text" list="namabarang" name="namabarang" value={inputs.namabarang} onChange={handleInputChange} required autoComplete="off"></input>
+                        <input type="text" class="form-control" placeholder="wajib isi" list="namabarang" name="namabarang" 
+                        value={inputs.namabarang} onChange={handleInputChange} required autoComplete="off"></input>
                         <datalist id="namabarang" name="namabarang">
                             {options.map((item, index) => 
                                 <option key={index}>{item.namabarang}</option>
                             )}
                         </datalist>
                         <h4>Nama Penerima:</h4>
-                        <input type="text" name="namaPenerima" value={inputs.namaPenerima} onChange={handleInputChange} required/>
-                        <h4>No. PO</h4>
-                        <input type="text" name="kodePO" value={inputs.kodePO} onChange={handleInputChange} autoComplete="off" required/>
+                        <input type="text" class="form-control" name="namaPenerima" value={inputs.namaPenerima} 
+                        onChange={handleInputChange} placeholder="wajib isi" required/>
                         <h4>Quantity:</h4>
-                        <input type="number" name="quantity" value={inputs.quantity} onChange={handleInputChange} min="0" required/>
-                        <h4>No Surat Jalan:</h4>
-                        <input type="text" name="noSuratJalan" value={inputs.noSuratJalan} onChange={handleInputChange} required/>
+                        <input type="number" class="form-control" name="quantity" value={inputs.quantity} 
+                        onChange={handleInputChange} min="0" placeholder="wajib isi"required/>
+                        
                         <h4>Tanggal Masuk:</h4>
-                        <input type="date" name="tgl" value={inputs.tgl} onChange={handleInputChange} max={datePickerIconst} required/>
+                        <input type="date" class="form-control" name="tgl" value={inputs.tgl} onChange={handleInputChange} 
+                         min={datePickerIconst} max={datePickerIconst} required/>
                         <h4>Lokasi:</h4>
-                        <input type="text" name="lokasi" value={inputs.lokasi} onChange={handleInputChange} required/>
+                        <input type="text" class="form-control" name="lokasi" value={inputs.lokasi} 
+                        onChange={handleInputChange} placeholder="wajib isi" required/>
+                        <h4>Keterangan:</h4>
+                        <input type="text" class="form-control" name="keterangan" value={inputs.keterangan} 
+                        onChange={handleInputChange}/>
                         <br/><br/>
                         <div className="twoside">
                             <Button class="btn btn-danger" onClick={resetInput}>Reset</Button>

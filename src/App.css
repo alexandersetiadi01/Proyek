@@ -48,10 +48,14 @@ h4{
 }
 
 .addButton{
-  bottom: 10px;
-  right: 10px;
+  
   color: red;
-  position: fixed;
+  position: flex-start;
+}
+
+.forButton{
+  bottom: 15%;
+  right: 75%;
 }
 
 .addButton:hover{
@@ -84,4 +88,8 @@ Button{
 
 .pilihProyek{
   width: 10vw;
+}
+
+.side{
+  width: 10vw
 }

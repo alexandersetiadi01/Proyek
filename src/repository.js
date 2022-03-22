@@ -29,21 +29,9 @@ async function getMasterBarangByName(namabarang){
     return response.data;
 }
 
-//barang masuk + barang sisa
+//barang masuk
 async function addBarangMasuk(barang) {
     const response = await axios.post(API_HOST + "/api/barangMasuk/addBarangMasuk", barang);
-  
-    return response.data;
-}
-
-async function getBarangMasukPO(namabarang){
-    const response = await axios.get(API_HOST + "/api/barangMasuk/getPO", {params:{namabarang}});
-
-    return response.data;
-}
-
-async function addBarangSisa(barang) {
-    const response = await axios.post(API_HOST + "/api/barangMasuk/addbarangSisa", barang);
   
     return response.data;
 }
@@ -54,16 +42,21 @@ async function getAllBarangMasuk(){
     return response.data;
 }
 
-
-async function getAllBarangSisa(){
-    const response = await axios.get(API_HOST + "/api/barangMasuk/listBarangSisa");
+async function getBarangMasukPO(namabarang){
+    const response = await axios.get(API_HOST + "/api/barangMasuk/getPO", {params:{namabarang}});
 
     return response.data;
 }
 
+//barang sisa
+async function addBarangSisa(barang) {
+    const response = await axios.post(API_HOST + "/api/barangSisa/addbarangSisa", barang);
+  
+    return response.data;
+}
 
-async function getAllBarang(){
-    const response = await axios.get(API_HOST + "/api/barangMasuk/");
+async function getAllBarangSisa(){
+    const response = await axios.get(API_HOST + "/api/barangSisa/listBarangSisa");
 
     return response.data;
 }
@@ -176,6 +169,14 @@ async function getKodePO(){
     return response.data;
 }
 
+
+async function getInfo(barang){
+    const response = await axios.get(API_HOST + "/api/purchasing/getInfo", barang);
+
+    return response.data;
+}
+
+
 //activity
 async function getAllActivity(){
     const response = await axios.get(API_HOST + "/api/activity/getActivity");
@@ -275,12 +276,12 @@ function getRole(){
 
 export{
     createBarang, getAllMasterBarang, getMasterBarangByName, checkMasterBarang, 
-    addBarangMasuk, getAllBarangMasuk, addBarangSisa,getAllBarangSisa, getAllBarang, getBarangMasukPO,
+    addBarangMasuk, getAllBarangMasuk, addBarangSisa,getAllBarangSisa, getBarangMasukPO,
     addBarangKeluar, getAllBarangKeluar,
     getinventory, inventoryKeluar, inventoryMasuk, findInventory, newInventory,
     getHistory, addHistory,
     getUser, register, userList, setUserName, getUserName,
-    seeAllPurchasing, addPurchasing, getKodePO,
+    seeAllPurchasing, addPurchasing, getKodePO, getInfo,
     setIsLogin, getLogin, setLogOut, setRole, getRole,
     getAllActivity, seeAllActivity, addActivityKeluar, addActivityMasuk, addActivitySisa,
     seeAllProyek, setSelectedProyek, getSelectedProyek,

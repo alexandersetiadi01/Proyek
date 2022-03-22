@@ -239,19 +239,15 @@ function PurchasingPage(){
                         <input type="number" class="form-control" name="harga" value={inputs.harga} onChange={handleInputChange} min="0"></input>
                         <h4>supplier:</h4>
                         <select class="form-control" value={inputs.supplier} name="supplier" onChange={handleInputChange} required>
-                            <option>pilih supplier</option>
-                                    {suppliers.map((item, index) => 
-                                        <option key={index}>{item.namaSupplier}</option>
-                                    )}
+                            <option value="" disabled>pilih supplier</option>
+                            {suppliers.map((item, index) => 
+                                <option key={index}>{item.namaSupplier}</option>
+                            )}
                         </select>
                         <h4>No PO:</h4> 
-                        <input type="text" class="form-control" list="kodePO" name="kodePO" value={inputs.kodePO} onChange={handleInputChange} 
-                        required autoComplete="off" placeholder="pilih singkatan supplier untuk awalan kode PO"></input>
-                        <datalist id="kodePO" name="kodePO">
-                            {suppliers.map((item, index) => 
-                                <option key={index}>{item.code}</option>
-                            )}
-                        </datalist>
+                        <input type="text" class="form-control" name="kodePO" value={inputs.kodePO} onChange={handleInputChange} 
+                        required autoComplete="off"></input>
+                        
                         {/*<input type="text" name="supplier" value={inputs.supplier} onChange={handleInputChange} required></input>*/}
                         <h4>Tanggal:</h4>
                             <input type="date" class="form-control" name="tgl" value={inputs.tgl} onChange={handleInputChange} 
@@ -271,7 +267,7 @@ function PurchasingPage(){
             </>
             :
             <div className="content">
-                <h2>your account have no permision to access this feature</h2>
+                <h2>your account level have no permision to access this feature</h2>
             </div>
             }
         </>

@@ -6,7 +6,7 @@ import * as BsIcons from "react-icons/bs";
 import {  
     addBarangMasuk, getAllBarangMasuk, getAllMasterBarang, 
     addHistory, getKodePO, seeAllPurchasing, inventoryMasuk, 
-    findInventory, newInventory, getUserName, addActivityMasuk, getSelectedProyek, getBarangMasukPO
+    findInventory, newInventory, getUserName, addActivityMasuk, getSelectedProyek, getBarangMasukPO, getAllSupplier, getInfo
 } from "../../repository";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
@@ -28,12 +28,14 @@ function BarangMasukPage(){
         kodePO: "",
         namaPenerima: "",
         quantity: 0,  
-        noSuratJalan: "",
+        noSuratJalan1: "",
+        noSuratJalan2: "",
         tgl: "",
         lokasi: "",
         action: "barang masuk",
         username: user.username,
-        proyek: proyek
+        proyek: proyek,
+        keterangan: ''
     }
 
     const [modal, setModal] = useState(false);
@@ -64,7 +66,8 @@ function BarangMasukPage(){
                     quantity: barang.quantity,  
                     tgl: barang.tgl,
                     lokasi: barang.lokasi,
-                    proyek: barang.proyek
+                    proyek: barang.proyek,
+                    keterangan: barang.keterangan
                 }
                 if(newBarang.proyek === proyek){
                     rowsData.push(newBarang);
@@ -105,6 +108,16 @@ function BarangMasukPage(){
         setModal(!modal);
         setInputs(initialState);
     };
+
+    const choosePO = (item) => {
+        if(PO === null){
+            setPO(item);
+        }else{
+            setPO('');
+        }
+        
+    }
+    
     useEffect(() => {
         async function getPO(){
             const data = await getKodePO();
@@ -122,12 +135,17 @@ function BarangMasukPage(){
             setPO(optionData);
         }
         getPO();
-    }, [])
+    }, []) 
+   
+
     const resetInput = () => setInputs(initialState);
     const handleInputChange = (event) => {
         setInputs({...inputs, [event.target.name]: event.target.value});
-        
     };
+
+    
+    const [info, setInfo] = useState()
+    
 
     const add = async (event) => {
         event.preventDefault();
@@ -135,15 +153,16 @@ function BarangMasukPage(){
             "confirm adding: " + 
             "\n namabarang: " + inputs.namabarang +
             "\n kode PO: " + inputs.kodePO + 
-            "\n surat jalan: " + inputs.noSuratJalan + 
+            "\n surat jalan: " + inputs.noSuratJalan1 + inputs.noSuratJalan2 + 
             "\n nama penerima: " + inputs.namaPenerima +
             "\n quantity: " + inputs.quantity +
             "\n tgl: " + inputs.tgl +
-            "\n lokasi: " + inputs.lokasi) === true){
+            "\n lokasi: " + inputs.lokasi + 
+            "\n keterangan: " + inputs.keterangan) === true){
                 await addBarangMasuk(inputs);
                 window.alert("item added as barang masuk");
                 //addHistory(inputs);
-                addActivityMasuk(inputs)
+                addActivityMasuk(inputs);
                 
                 const check = await findInventory(inputs.namabarang);
                 if(check === null) {
@@ -157,14 +176,13 @@ function BarangMasukPage(){
                 } 
                 
             }
-        
+            
        
         //showKonfirmasi();
         //navigate("/Barang_Masuk");
          
     }
     
-
     const columns = 
         /*return */[
         {
@@ -215,6 +233,10 @@ function BarangMasukPage(){
             text: 'Lokasi',
             filter: textFilter(),
             sort: true
+        },
+        {
+            dataField: 'keterangan',
+            text: 'Keterangan'
         }];
 /*
     const selectRow = {
@@ -241,17 +263,36 @@ function BarangMasukPage(){
         setKonfirmasi(!konfirmasi);
     }
 
+    const [suppliers, setSuppliers] = useState([]);
+    
+    useEffect(() => {
+        async function getSupplierAPI(){
+            const data = await getAllSupplier()
+            let rowsData = []
+            for (const barang of data){
+                const newBarang = {
+                    namaSupplier: barang.namaSupplier,
+                    Pic: barang.Pic, 
+                    telp: barang.telp,
+                    code: barang.code,
+                }
+                rowsData.push(newBarang);
+            }
+            setSuppliers(rowsData);
+        }
+        getSupplierAPI();
+    }, [])
+
+    const [pindah, setPindah] = useState(false);
+    
+    const pindahBarang = () => {
+        setPindah(!pindah);
+    }
+    
     return(
         <>
           <Navbar />
             <h2 text-align="center">Barang Masuk</h2>
-            
-             {/*
-            <div className="searchGroup">
-                <input onChange={handleSearch} placeholder="masukan nama barang"></input>
-                <Button>search</Button>
-            </div> 
-            */}
             <br/>
             
             <BootstrapTable keyField='kodemasuk' data={ rows } columns={ columns } 
@@ -265,8 +306,8 @@ function BarangMasukPage(){
             }}*/
             hover/>
                     
-            <div className="addButton">
-                <BsIcons.BsFillPlusCircleFill size={50} onClick={showModal}/>
+            <div>
+                <BsIcons.BsFillPlusCircleFill className="addButton" size={50} onClick={showModal}/>
             </div>  
         
                 <Modal 
@@ -280,30 +321,77 @@ function BarangMasukPage(){
                 </Modal.Header>
                 <Modal.Body>
                     <form onSubmit={add}>
-                        <h4>Nama Barang:</h4>
-                        <input type="text" class="form-control" list="namabarang" name="namabarang" value={inputs.namabarang} onChange={handleInputChange} required autoComplete="off"></input>
+                        <h4>Nama Barang: </h4> 
+                        <input type="text" class="form-control" list="namabarang" name="namabarang" value={inputs.namabarang} 
+                        onChange={handleInputChange} required autoComplete="off" placeholder="wajib isi"></input>
                         <datalist id="namabarang" name="namabarang">
                             {options.map((item, index) => 
-                                <option key={index}>{item.namabarang}</option>
+                                <option key={index} value={item.namabarang}> Nomor PO: {item.kodePO}</option>
                             )}
                         </datalist>
                         <h4>Nama Penerima:</h4>
-                        <input type="text" class="form-control" name="namaPenerima" value={inputs.namaPenerima} onChange={handleInputChange} required/>
+                        <input type="text" class="form-control" name="namaPenerima" value={inputs.namaPenerima} 
+                        onChange={handleInputChange} placeholder="wajib isi" required/>
                         <h4>No. PO</h4>
-                        <input type="text" class="form-control" list="kodePO" name="kodePO" value={inputs.kodePO} onChange={handleInputChange} required autoComplete="off"></input>
+                        <input type="text" class="form-control" list="kodePO" name="kodePO" value={inputs.kodePO} 
+                        onChange={handleInputChange} placeholder="sesuai nomor PO yang tertulis di namabarang" required autoComplete="off"></input>
                         <datalist id="kodePO" name="kodePO">
                             {PO.map((item, index) => 
                                 <option key={index}>{item.kodePO}</option>
                             )}
                         </datalist>
                         <h4>Quantity:</h4>
-                        <input type="number" class="form-control" name="quantity" value={inputs.quantity } onChange={handleInputChange} min="0" required/>
+                        <input type="number" step="any" class="form-control" name="quantity" value={inputs.quantity } 
+                        onChange={handleInputChange} min="1" placeholder="wajib isi" required/>
+                        <br/>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" onClick={pindahBarang}></input>
+                            <label class="form-check-label" for="flexCheckChecked">
+                                dari proyek lain
+                            </label>
+                        </div>
+
+                        { pindah ?
+                        <>
+                        <h4>Keterangan:</h4>
+                        <input type="text" class="form-control" name="keterangan" value={inputs.keterangan} onChange={handleInputChange} required/>
+                        </>
+                        :
+                        <>
                         <h4>No Surat Jalan:</h4>
-                        <input type="text" class="form-control" name="noSuratJalan" value={inputs.noSuratJalan} onChange={handleInputChange} required/>
+                        <div className="twoside">
+                            <input type="text" class="side" list="noSuratJalan1" name="noSuratJalan1" value={inputs.noSuratJalan1} 
+                            onChange={handleInputChange} placeholder="kode supplier" required/>
+                            <datalist id="noSuratJalan1" name="noSuratJalan1">
+                                {suppliers.map((item, index) => 
+                                    <option key={index} value={item.code}>{item.namaSupplier}</option>
+                                )}
+                            </datalist>
+                        </div>
+                        <div className="twoside">
+                            <input type="text" class="side" list="noSuratJalan2" name="noSuratJalan2" value={inputs.noSuratJalan2} 
+                            onChange={handleInputChange} placeholder="nomor surat jalan" required/>
+                        </div>
+                        <h4>Keterangan:</h4>
+                        <input type="text" class="form-control" name="keterangan" value={inputs.keterangan} onChange={handleInputChange}/>
+                        
+                        </>
+                        }
+                        
                         <h4>Tanggal Masuk:</h4>
-                        <input type="date" class="form-control" name="tgl" value={inputs.tgl} onChange={handleInputChange} max={datePickerIconst} required/>
+                        <input type="date" class="form-control" name="tgl" value={inputs.tgl} 
+                        onChange={handleInputChange} min={datePickerIconst} max={datePickerIconst} required/>
                         <h4>Lokasi:</h4>
-                        <input type="text" class="form-control" name="lokasi" value={inputs.lokasi} onChange={handleInputChange} required/>
+                        <input type="text" class="form-control" name="lokasi" value={inputs.lokasi} 
+                        onChange={handleInputChange} placeholder="wajib isi" required/>
+                        {/*<h4>pindah proyek: </h4>
+                        <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1"/>
+                        <label class="form-check-label" for="exampleRadios1">
+                            yes
+                        </label>
+                            </div>*/}
+                        
                         <br/><br/>
                         <div className="twoside">
                             <Button class="btn btn-danger" onClick={resetInput}>Reset</Button>
