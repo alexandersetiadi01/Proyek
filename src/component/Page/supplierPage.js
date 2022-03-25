@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import BootstrapTable from "react-bootstrap-table-next";
 import filterFactory, { textFilter } from "react-bootstrap-table2-filter";
 import paginationFactory from "react-bootstrap-table2-paginator";
-import { addSupplier, getAllSupplier, getRole } from "../../repository";
+import { addSupplier, getAllSupplier, getRole, updateSupplier } from "../../repository";
 import Navbar from "../Menu/navbar";
 import * as BsIcons from "react-icons/bs";
 import { Button, CloseButton, Modal } from "react-bootstrap";
@@ -77,6 +77,39 @@ function SupplierPage() {
         }
     }
 
+    const [update, setUpdate] = useState(initialState);
+    const handleUpdateChange = (event) => {
+        setUpdate({...update, [event.target.name]: event.target.value});
+        
+    }
+    const [updateModal, setUpdateModal] = useState(false);
+    const updating = () => {
+        setUpdateModal(!updateModal);
+    }
+    
+    const rowEvent = {
+        onDoubleClick: (event, row) => {
+            setUpdate(row);
+            console.log(update);
+            updating();
+        }
+    }
+
+    const alterSupplier = (event) => {
+        event.preventDefault();
+        if(window.confirm(
+            "confirm update supplier: " + update.namaSupplier + 
+            "\n Pic: " + update.Pic + 
+            "\n No. telp: " + update.tlp +
+            "\n code: " + update.code) === true){
+                updateSupplier(update);
+                window.alert('supplier updated')
+                updating();
+                window.location.reload();
+            }
+        
+    }
+
     const handleSubmit = (event) => {
         event.preventDefault();
         if(window.confirm(
@@ -96,22 +129,33 @@ function SupplierPage() {
         <>
             <Navbar/>
             <h2>Supplier</h2>
+            <br/>            
+            {checkRole() === true ?
+            <>
+            <h4>double click to update</h4>
+            <BootstrapTable
+            keyField='namabarang' data={rows} columns={ columns } 
+            filter={ filterFactory() } pagination={paginationFactory()} striped hover 
+            rowEvents={rowEvent}/>
+            
+            <div className="addButton">
+                <BsIcons.BsFillPlusCircleFill size={50} onClick={showModal}/>
+            </div>
+            </>
+            :
+            <>
             <BootstrapTable
             keyField='namabarang' data={rows} columns={ columns } 
             filter={ filterFactory() } pagination={paginationFactory()} striped hover/>
-            {checkRole() === true &&
-                <div className="addButton">
-                    <BsIcons.BsFillPlusCircleFill size={50} onClick={showModal}/>
-                </div>
+            </>
             }
-
             <Modal
                 show={modal}
                 size="lg-down"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered>
                 <Modal.Header>
-                <Modal.Title id="contained-modal-title-vcenter">Master Barang</Modal.Title>
+                <Modal.Title id="contained-modal-title-vcenter">Add Supplier</Modal.Title>
                     <CloseButton onClick={showModal}/>
                 </Modal.Header>
                 <Modal.Body>
@@ -132,6 +176,36 @@ function SupplierPage() {
                         </div>
                         <div className="twoside">
                             <Button class="btn btn-primary" type="submit">Add</Button>
+                        </div>
+                    </form>
+               </Modal.Body>
+               
+            </Modal>
+            <Modal
+                show={updateModal}
+                size="lg-down"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Header>
+                <Modal.Title id="contained-modal-title-vcenter">Update Supplier {update.namaSupplier} </Modal.Title>
+                    <CloseButton onClick={updating}/>
+                </Modal.Header>
+                <Modal.Body>
+                    <form onSubmit={alterSupplier}>
+                        <h4>Pic:</h4>
+                        <input type="text" class="form-control" name="Pic" value={update.Pic} onChange={handleUpdateChange}></input>
+                        <h4>No. telp:</h4>
+                        <input type="text" class="form-control" name="tlp" value={update.tlp} onChange={handleUpdateChange}
+                        placeholder="xxxx-xxxxxxx"></input>
+                        <h4>code:</h4>
+                        <input type="text" class="form-control" name="code" value={update.code} onChange={handleUpdateChange}></input>
+                        
+                        <br/><br/>
+                        <div className="twoside">
+                        <Button class="btn btn-danger" onClick={resetInput}>Reset</Button>
+                        </div>
+                        <div className="twoside">
+                            <Button class="btn btn-primary" type="submit">Edit</Button>
                         </div>
                     </form>
                </Modal.Body>

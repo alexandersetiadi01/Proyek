@@ -50,5 +50,15 @@ export const sidebarData = [
         title: 'User List',
         path: '/User_List',
         classname:'nav-text'
+    },
+    {
+        title: 'Outstanding',
+        path: '/Outstanding',
+        classname:'nav-text'
+    },
+    {
+        title: 'Asset',
+        path: '/Asset',
+        classname:'nav-text'
     } 
 ]

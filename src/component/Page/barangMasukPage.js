@@ -6,7 +6,7 @@ import * as BsIcons from "react-icons/bs";
 import {  
     addBarangMasuk, getAllBarangMasuk, getAllMasterBarang, 
     addHistory, getKodePO, seeAllPurchasing, inventoryMasuk, 
-    findInventory, newInventory, getUserName, addActivityMasuk, getSelectedProyek, getBarangMasukPO, getAllSupplier, getInfo
+    findInventory, newInventory, getUserName, addActivityMasuk, getSelectedProyek, getBarangMasukPO, getAllSupplier, getInfo, getAllBarangKeluar
 } from "../../repository";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
@@ -60,7 +60,6 @@ function BarangMasukPage(){
                     //kodebarang: barang.kodebarang,
                     namabarang: barang.namabarang,
                     kodemasuk: barang.kodemasuk, 
-                    kodePO: barang.kodePO,
                     noSuratJalan: barang.noSuratJalan,
                     namaPenerima: barang.namaPenerima,
                     quantity: barang.quantity,  
@@ -87,11 +86,9 @@ function BarangMasukPage(){
         async function getNamaBarangAPI(){
             const data = await seeAllPurchasing();
             let optionData = []
-            let POdata = []
             for (const barang of data){
                 const newBarang = {
                     namabarang: barang.namabarang,
-                    kodePO: barang.kodePO,
                     proyek: barang.proyek
                 }
                 if(newBarang.proyek === proyek){
@@ -99,7 +96,18 @@ function BarangMasukPage(){
                 }
                 
             }
+            const data2 = await getAllBarangKeluar();
+            for(const barang of data2){
+                const newBarang = {
+                    namabarang: barang.namabarang,
+                    proyek: barang.tujuan
+                }
+                if(newBarang.proyek === proyek){
+                    optionData.push(newBarang);
+                }
+            }
             setOption(optionData);
+
         }
         getNamaBarangAPI();
     }, [])
@@ -143,10 +151,6 @@ function BarangMasukPage(){
         setInputs({...inputs, [event.target.name]: event.target.value});
     };
 
-    
-    const [info, setInfo] = useState()
-    
-
     const add = async (event) => {
         event.preventDefault();
         if(window.confirm(
@@ -166,10 +170,12 @@ function BarangMasukPage(){
                 
                 const check = await findInventory(inputs.namabarang);
                 if(check === null) {
+                    //window.confirm('inventory not found')
                     newInventory(inputs);
                     //window.alert("new inventory added");
                     window.location.reload();
                 }else{
+                    //window.confirm('inventory found')
                     inventoryMasuk(inputs);
                     //window.alert("inventory updated");
                     window.location.reload();
@@ -177,7 +183,7 @@ function BarangMasukPage(){
                 
             }
             
-       
+            
         //showKonfirmasi();
         //navigate("/Barang_Masuk");
          
@@ -203,10 +209,6 @@ function BarangMasukPage(){
                 selectedRow
               },      */
         }, 
-        {
-            dataField: 'kodePO',
-            text: 'Kode PO',
-        },
         {
             dataField: 'namaPenerima',
             text: 'Nama Penerima',
@@ -326,20 +328,20 @@ function BarangMasukPage(){
                         onChange={handleInputChange} required autoComplete="off" placeholder="wajib isi"></input>
                         <datalist id="namabarang" name="namabarang">
                             {options.map((item, index) => 
-                                <option key={index} value={item.namabarang}> Nomor PO: {item.kodePO}</option>
+                                <option key={index} value={item.namabarang}></option>
                             )}
                         </datalist>
                         <h4>Nama Penerima:</h4>
                         <input type="text" class="form-control" name="namaPenerima" value={inputs.namaPenerima} 
                         onChange={handleInputChange} placeholder="wajib isi" required/>
-                        <h4>No. PO</h4>
+                       {/* <h4>No. PO</h4>
                         <input type="text" class="form-control" list="kodePO" name="kodePO" value={inputs.kodePO} 
                         onChange={handleInputChange} placeholder="sesuai nomor PO yang tertulis di namabarang" required autoComplete="off"></input>
                         <datalist id="kodePO" name="kodePO">
                             {PO.map((item, index) => 
                                 <option key={index}>{item.kodePO}</option>
                             )}
-                        </datalist>
+                            </datalist>*/}
                         <h4>Quantity:</h4>
                         <input type="number" step="any" class="form-control" name="quantity" value={inputs.quantity } 
                         onChange={handleInputChange} min="1" placeholder="wajib isi" required/>

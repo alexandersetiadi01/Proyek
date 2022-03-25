@@ -16,6 +16,11 @@ async function getAllMasterBarang(){
     return response.data;
 }
 
+async function updateMasterBarang(barang){
+    const response = await axios.put(API_HOST + "/api/masterBarang/update", barang);
+
+    return response.data;
+}
 
 async function checkMasterBarang(namabarang){
     const response = await axios.get(API_HOST + "/api/masterBarang/check", {params:{namabarang}});
@@ -149,6 +154,10 @@ async function userList(){
     return response.data;
 }
 
+async function updateUser(user){
+    const response = await axios.put(API_HOST + "/api/users/", user);
+    return response.data;
+}
 
 //purchasing
 async function seeAllPurchasing(){
@@ -208,6 +217,18 @@ async function addActivitySisa(activity){
     return response.data
 }
 
+async function addActivityPurchasing(activity){
+    const response = await axios.post(API_HOST + "/api/activity/addActivityPurchasing", activity);
+
+    return response.data
+}
+
+async function addActivityAsset(activity){
+    const response = await axios.post(API_HOST + "/api/activity/addActivityAsset", activity);
+
+    return response.data
+}
+
 //supplier
 async function addSupplier(supplier){
     const response = await axios.post(API_HOST + "/api/supplier", supplier);
@@ -228,6 +249,12 @@ async function selectSupplier(namaSupplier){
     return response.data;
 }
 
+async function updateSupplier(supplier){
+    const response = await axios.put(API_HOST + "/api/supplier", supplier);
+
+    return response.data;
+}
+
 //proyek
 async function seeAllProyek(){
     const response = await axios.get(API_HOST + "/api/proyek");
@@ -235,7 +262,43 @@ async function seeAllProyek(){
     return response.data;
 }
 
+//outstanding
+async function addOutstanding(barang){
+    const response = await axios.post(API_HOST + "/api/outstanding", barang);
 
+    return response.data;
+}
+
+async function seeAllOutstanding(){
+    const response = await axios.get(API_HOST + "/api/outstanding");
+
+    return response.data;
+}
+
+//asset
+async function addAsset(asset){
+    const response = await axios.post(API_HOST + "/api/asset", asset);
+
+    return response.data;
+}
+
+async function seeAllAsset(){
+    const response = await axios.get(API_HOST + "/api/asset");
+
+    return response.data;
+}
+
+async function findAsset(nomor){
+    const response = await axios.get(API_HOST + "/api/asset/find", {params:{nomor}});
+
+    return response.data;
+}
+
+async function updateAsset(asset){
+    const response = await axios.put(API_HOST + "/api/asset/update", asset);
+
+    return response.data;
+}
 
 //saving data locally
 function setSelectedProyek(proyek){
@@ -275,15 +338,17 @@ function getRole(){
 }
 
 export{
-    createBarang, getAllMasterBarang, getMasterBarangByName, checkMasterBarang, 
+    createBarang, getAllMasterBarang, getMasterBarangByName, checkMasterBarang, updateMasterBarang,
     addBarangMasuk, getAllBarangMasuk, addBarangSisa,getAllBarangSisa, getBarangMasukPO,
     addBarangKeluar, getAllBarangKeluar,
     getinventory, inventoryKeluar, inventoryMasuk, findInventory, newInventory,
     getHistory, addHistory,
-    getUser, register, userList, setUserName, getUserName,
+    getUser, register, userList, setUserName, getUserName, updateUser,
     seeAllPurchasing, addPurchasing, getKodePO, getInfo,
     setIsLogin, getLogin, setLogOut, setRole, getRole,
-    getAllActivity, seeAllActivity, addActivityKeluar, addActivityMasuk, addActivitySisa,
+    getAllActivity, seeAllActivity, addActivityKeluar, addActivityMasuk, addActivitySisa, addActivityAsset, addActivityPurchasing,
     seeAllProyek, setSelectedProyek, getSelectedProyek,
-    addSupplier, getAllSupplier, selectSupplier
+    addSupplier, getAllSupplier, selectSupplier, updateSupplier,
+    seeAllOutstanding, addOutstanding,
+    addAsset, seeAllAsset, findAsset, updateAsset
 }  

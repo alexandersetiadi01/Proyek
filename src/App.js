@@ -20,6 +20,8 @@ import PrivateRoutes from "./routes";
 import ActivityPage from "./component/Page/activityPage";
 import ProyekPage from "./component/Page/proyekPage";
 import SupplierPage from "./component/Page/supplierPage";
+import OutstandingPage from "./component/Page/outstandingPage";
+import AssetPage from "./component/Page/assetPage";
 /*
 function LogingIn() {
     const isLogin = false;
@@ -123,6 +125,8 @@ function App() {
               <Route path="/User_List" element={<UserPage/>}></Route>
               <Route path="/Activity" element={<ActivityPage/>}></Route>
               <Route path="/Supplier" element={<SupplierPage/>}></Route>
+              <Route path="/Outstanding" element={<OutstandingPage/>}></Route>
+              <Route path="/Asset" element={<AssetPage/>}></Route>
               <Route path="*" element={<UnknownPage/>}></Route>
             </Route>
             

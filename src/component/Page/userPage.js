@@ -4,7 +4,7 @@ import BootstrapTable from "react-bootstrap-table-next";
 import filterFactory, { textFilter } from "react-bootstrap-table2-filter";
 import paginationFactory from "react-bootstrap-table2-paginator";
 import * as BsIcons from "react-icons/bs";
-import { getRole, register, userList } from "../../repository";
+import { getRole, getUserName, register, updateUser, userList } from "../../repository";
 import Navbar from "../Menu/navbar";
 
 function UserPage(){
@@ -14,7 +14,7 @@ function UserPage(){
         password: "",
         accountLevel: ""
     }
-
+    const loggedIn = getUserName();
     const columns = [
         {
             dataField: 'username',
@@ -57,8 +57,9 @@ function UserPage(){
             let rowsData = []
             for (const user of data){
                 const newUser = {
+                    ID: user.ID,
                     username: user.username,
-                    accountLevel: user.accountLevel
+                    accountLevel: user.accountLevel,
                 }
                 rowsData.push(newUser);
             }
@@ -75,6 +76,43 @@ function UserPage(){
         }
     }
 
+    //update user 
+    const [updateModal, setUpdateModal] = useState(false);
+    const updating = () => {
+        setUpdateModal(!updateModal);
+    }
+    const [update, setUpdate] = useState(initialState);
+    const handleUpdateChange = (event) => {
+        setUpdate({...update, [event.target.name]: event.target.value});
+        
+    }
+    const rowEvent = {
+        onDoubleClick: (event, row) => {
+            setUpdate(row);
+            console.log(update);
+            updating();
+        }
+    }
+
+    const alterAsset = (event) => {
+        event.preventDefault();
+        if(window.confirm(
+            "confirm change password for user " + update.username) === true){
+                updateUser(update);
+                window.alert('password updated');
+                updating();
+                if(update.ID === loggedIn.ID){
+                    window.alert("logging out due to password changed");
+                    sessionStorage.clear();
+                    window.location.reload();
+                }else{
+                    window.location.reload();
+                }
+                
+            }
+        
+    }
+    
     return(
         <>
             <Navbar/>
@@ -82,9 +120,11 @@ function UserPage(){
             <>
             <h2>Users</h2>
             <br/>
+            <h4>double click to update</h4>
             <BootstrapTable 
             keyField='ID' data={rows} columns={ columns } 
-            filter={ filterFactory() } pagination={paginationFactory()} striped hover/>
+            filter={ filterFactory() } pagination={paginationFactory()} striped hover
+            rowEvents={rowEvent}/>
     
             <div className="addButton">
                 <BsIcons.BsFillPlusCircleFill size={50} onClick={showModal}/>
@@ -96,7 +136,7 @@ function UserPage(){
                 aria-labelledby="contained-modal-title-vcenter"
                 centered>
                 <Modal.Header>
-                <Modal.Title id="contained-modal-title-vcenter">Purchasing</Modal.Title>
+                <Modal.Title id="contained-modal-title-vcenter">Add User</Modal.Title>
                     <CloseButton onClick={showModal}/>
                 </Modal.Header>
                 <Modal.Body>
@@ -121,7 +161,27 @@ function UserPage(){
                 </Modal.Body>
             
             </Modal>
+            <Modal
+                show={updateModal}
+                size="lg-down"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered>
+                <Modal.Header>
+                <Modal.Title id="contained-modal-title-vcenter">change password</Modal.Title>
+                    <CloseButton onClick={updating}/>
+                </Modal.Header>
+                <Modal.Body>
+                <form onSubmit={alterAsset}>
+                    <h4>new password:</h4>
+                    <input type="text" class="form-control" value={update.password} name="password" onChange={handleUpdateChange}required></input>
+                    <br/><br/>
+                    <Button type="submit">confirm</Button>
+                </form>
+                </Modal.Body>
+            
+            </Modal>
             </>
+        
             :
             <div className="content">
                 <h2>your account have no permision to access this feature</h2>

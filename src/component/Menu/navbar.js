@@ -6,6 +6,7 @@ import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import "./navbar.css";
 import {sidebarData, sidebarDataAdmin} from "./sidebarData";
 import { getRole, getSelectedProyek, getUserName, setLogOut } from "../../repository";
+import { Button } from "react-bootstrap";
 
 function Navbar(){ 
     const [sidebar, setSidebar] = useState(false);
@@ -13,8 +14,11 @@ function Navbar(){
     const showSidebar = () => setSidebar(!sidebar);
     const navigate = useNavigate();
     const logout = () => {
-        setLogOut();
-        navigate("/");
+        if(window.confirm("logging out?") === true){
+            setLogOut();
+            navigate("/");
+        }
+       
     }
 
     const proyek = getSelectedProyek();
@@ -26,7 +30,7 @@ function Navbar(){
         <Link to="#" className="menu-bars">
             <FaIcons.FaBars onClick={showSidebar}/>
         </Link>  
-        <h1>{proyek} - {user}</h1>
+        <h1 title="double click to logout" onDoubleClick={logout}> {proyek} - {user}</h1>
         </nav>
         <nav className={sidebar ? 'nav-menu-active' : 'nav-menu'}>
             
@@ -40,12 +44,7 @@ function Navbar(){
                         </li>
                     )
                 })}
-                <li className="nav-text">
-                    <button onClick={logout}>
-                        logout
-                    </button>
-                </li>
-
+                <li> </li>
             </ul>
         </nav>
                

@@ -2,17 +2,20 @@ import React, { useEffect, useState } from "react";
 import "../../App.css";
 import { Table, Button, CloseButton, Modal } from "react-bootstrap";
 import * as BsIcons from "react-icons/bs";
-import { addPurchasing, seeAllPurchasing, getAllMasterBarang, getRole, getSelectedProyek, getAllSupplier, getKodePO, selectSupplier } from "../../repository";
+import { addPurchasing, seeAllPurchasing, getAllMasterBarang, getRole, getSelectedProyek, 
+    getAllSupplier, getKodePO, addOutstanding, addActivityPurchasing, getUserName } from "../../repository";
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
 import paginationFactory from "react-bootstrap-table2-paginator";
 import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../Menu/navbar";
+
 function PurchasingPage(){
 
     const datePickerIconst = new Date().toLocaleDateString('en-ca');
     const location = useLocation();
+    const user = getUserName();
     const proyek = getSelectedProyek()
     const [suppliers, setSuppliers] = useState([]);
     const initialState = {
@@ -23,7 +26,8 @@ function PurchasingPage(){
         supplier: "",
         tgl: "",
         totalHarga: 0,
-        proyek: proyek
+        proyek: proyek,
+        username: user.username
     }
 
     const [modal, setModal] = useState(false);
@@ -58,6 +62,8 @@ function PurchasingPage(){
             "\n supplier: " + inputs.supplier) === true){
                 addPurchasing(inputs);
                 window.alert("purchase added");
+                addOutstanding(inputs);
+                addActivityPurchasing(inputs);
                 showModal();
                 window.location.reload();
             }
