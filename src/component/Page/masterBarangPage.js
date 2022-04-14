@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../../App.css";
 import { Button, CloseButton, Modal } from "react-bootstrap";
 import * as BsIcons from "react-icons/bs";
-import { checkMasterBarang, createBarang, getAllMasterBarang, getRole, getSelectedProyek, updateMasterBarang } from "../../repository";
+import { checkMasterBarang, createBarang, getAllMasterBarang, getAllSatuan, getRole, getSelectedProyek, updateMasterBarang } from "../../repository";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import paginationFactory from "react-bootstrap-table2-paginator";
@@ -101,19 +101,16 @@ function MasterBarangPage(){
         {
             dataField: 'subCategory',
             text: 'Sub Category',
-            filter: textFilter(),
             sort: true
         },
         {
             dataField: 'merk',
             text: 'Merk',
-            filter: textFilter(),
             sort: true
         },
         {
             dataField: 'type',
             text: 'Type',
-            filter: textFilter(),
             sort: true
     
         },
@@ -175,6 +172,24 @@ function MasterBarangPage(){
         
     }
 
+    const [satuan, setSatuan] = useState([]);
+    useEffect(() => {
+        async function getSatuanAPI(){
+            const data = await getAllSatuan();
+            let rowsData = []
+            for (const barang of data){
+                const newBarang = {
+                    //kodebarang: barang.kodebarang,
+                    satuan: barang.satuan
+                }
+                rowsData.push(newBarang);
+            }
+            setSatuan(rowsData);
+        }
+        getSatuanAPI();
+    }, [])
+
+
     return(
         <>  
           <Navbar />
@@ -219,7 +234,13 @@ function MasterBarangPage(){
                         <h4>Type:</h4>
                         <input type="text" class="form-control" name="type" value={update.type} onChange={handleUpdateChange}></input>
                         <h4>Satuan:</h4>
-                        <input type="text" class="form-control" name="satuan" value={update.satuan} onChange={handleUpdateChange} required></input>
+                        <input type="text" class="form-control" list="satuan" name="satuan" value={update.satuan} 
+                        onChange={handleInputChange} required autoComplete="off" placeholder="wajib isi"></input>
+                        <datalist id="satuan" name="satuan">
+                            {satuan.map((item, index) => 
+                                <option key={index} value={item.satuan}></option>
+                            )}
+                        </datalist> 
                         <h4>Ukuran:</h4>
                         <input type="text" class="form-control" name="ukuran" value={update.ukuran} onChange={handleUpdateChange} required></input>
                         <button type="submit" hidden></button>
@@ -255,7 +276,13 @@ function MasterBarangPage(){
                         <h4>Type:</h4>
                         <input type="text" name="type" class="form-control" value={inputs.type} onChange={handleInputChange}></input>
                         <h4>Satuan:</h4>
-                        <input type="text" name="satuan" class="form-control" value={inputs.satuan} onChange={handleInputChange} required></input>
+                        <input type="text" class="form-control" list="satuan" name="satuan" value={inputs.satuan} 
+                        onChange={handleInputChange} required autoComplete="off" placeholder="wajib isi"></input>
+                        <datalist id="satuan" name="satuan">
+                            {satuan.map((item, index) => 
+                                <option key={index} value={item.satuan}></option>
+                            )}
+                        </datalist> 
                         <h4>Ukuran:</h4>
                         <input type="text" name="ukuran" class="form-control" value={inputs.ukuran} onChange={handleInputChange} required></input>
                         <button type="submit" hidden></button>

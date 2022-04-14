@@ -1,7 +1,7 @@
 import axios from "axios";
 
-//const API_HOST = "http://localhost:8080"; 
-const API_HOST = "https://dbsolution.herokuapp.com"
+const API_HOST = "http://localhost:8080"; 
+//const API_HOST = "https://dbsolution.herokuapp.com"
 
 //master barang
 async function createBarang(barang) {
@@ -37,6 +37,17 @@ async function getMasterBarangByName(namabarang){
 //barang masuk
 async function addBarangMasuk(barang) {
     const response = await axios.post(API_HOST + "/api/barangMasuk/addBarangMasuk", barang);
+  
+    return response.data;
+}
+async function getSuratJalan(noSuratJalan1, noSuratJalan2){
+    const response = await axios.get(API_HOST + "/api/barangMasuk/getSuratJalan", {params:{noSuratJalan1, noSuratJalan2}});
+
+    return response.data;
+}
+
+async function addBanyakBarangMasuk(barang) {
+    const response = await axios.post(API_HOST + "/api/barangMasuk/addBanyak", barang);
   
     return response.data;
 }
@@ -88,8 +99,15 @@ async function getAllBarangKeluar(){
 
 //inventory
 
-async function getinventory(){
-    const response = await axios.get(API_HOST + "/api/inventory/");
+async function getinventoryVPCA(){
+    const response = await axios.get(API_HOST + "/api/inventory/vanyaParkClusterAzura");
+
+    return response.data;
+}
+
+
+async function getinventoryKKC(){
+    const response = await axios.get(API_HOST + "/api/inventory/kantorKeluarahanCilenggang");
 
     return response.data;
 }
@@ -100,8 +118,14 @@ async function newInventory(barang){
     return response.data;
 }
 
-async function findInventory(namabarang){
-    const response = await axios.get(API_HOST + "/api/inventory/find", {params:{namabarang}});
+async function findInventoryVPCA(namabarang){
+    const response = await axios.get(API_HOST + "/api/inventory/findVanyaParkClusterAzura", {params:{namabarang}});
+
+    return response.data;
+}
+
+async function findInventoryKKC(namabarang){
+    const response = await axios.get(API_HOST + "/api/inventory/findKantorKelurahanCilenggang", {params:{namabarang}});
 
     return response.data;
 }
@@ -300,6 +324,14 @@ async function updateAsset(asset){
     return response.data;
 }
 
+//satuan
+
+async function getAllSatuan(){
+    const response = await axios.get(API_HOST + "/api/satuan");
+
+    return response.data;
+}
+
 //saving data locally
 function setSelectedProyek(proyek){
     sessionStorage.setItem("proyek", proyek);
@@ -339,9 +371,9 @@ function getRole(){
 
 export{
     createBarang, getAllMasterBarang, getMasterBarangByName, checkMasterBarang, updateMasterBarang,
-    addBarangMasuk, getAllBarangMasuk, addBarangSisa,getAllBarangSisa, getBarangMasukPO,
+    addBarangMasuk, getAllBarangMasuk, addBarangSisa,getAllBarangSisa, getBarangMasukPO, addBanyakBarangMasuk, getSuratJalan,
     addBarangKeluar, getAllBarangKeluar,
-    getinventory, inventoryKeluar, inventoryMasuk, findInventory, newInventory,
+    getinventoryVPCA, getinventoryKKC, inventoryKeluar, inventoryMasuk, findInventoryKKC, findInventoryVPCA, newInventory,
     getHistory, addHistory,
     getUser, register, userList, setUserName, getUserName, updateUser,
     seeAllPurchasing, addPurchasing, getKodePO, getInfo,
@@ -350,5 +382,6 @@ export{
     seeAllProyek, setSelectedProyek, getSelectedProyek,
     addSupplier, getAllSupplier, selectSupplier, updateSupplier,
     seeAllOutstanding, addOutstanding,
-    addAsset, seeAllAsset, findAsset, updateAsset
+    addAsset, seeAllAsset, findAsset, updateAsset,
+    getAllSatuan
 }  

@@ -1,8 +1,9 @@
 import React, {useState, useEffect, Fragment} from "react";
 import { Button, CloseButton, Modal } from "react-bootstrap";
 import * as BsIcons from "react-icons/bs";
-import { addBarangKeluar, getAllBarangKeluar, getAllBarangMasuk, addHistory, 
-    findInventory, newInventory, inventoryKeluar, addActivityKeluar, getUserName, getSelectedProyek, seeAllProyek } from "../../repository";
+import { addBarangKeluar, getAllBarangKeluar, getAllBarangMasuk,
+    findInventoryVPCA, findInventoryKKC, newInventory, inventoryKeluar, 
+    addActivityKeluar, getUserName, getSelectedProyek, seeAllProyek, getAllSatuan } from "../../repository";
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
@@ -23,12 +24,23 @@ function BarangKeluarPage(){
         namaPengambil: "",
         quantity: 0,
         progress: "",  
-        tgl: "",
+        tgl: datePickerIconst,
         proyek: proyek,
         username: user.username,
         keterangan: '',
-        tujuan: ''
+        tujuan: '',
+        satuan: ''
     }
+
+    //max-min input date
+    const day = new Date();
+    var mintgl = day.getDate() - 3;
+    var year = day.getFullYear();
+    var month = day.getMonth();
+    if(month < 10){month = "0" + month}
+    let minDate = year + '-' + month + '-' + mintgl;
+    
+
     const [inputs, setInputs] = useState(initialState);
     const showModal = () => {
         setModal(!modal);
@@ -41,36 +53,59 @@ function BarangKeluarPage(){
 
     const keluarinBarang = async (event) => {
         event.preventDefault();
-        event.preventDefault();
-        const check = await findInventory(inputs.namabarang);
-        if(check.quantity >= inputs.quantity){
-            if(window.confirm(
-                "confirm adding: " + 
-                "\n namabarang: " + inputs.namabarang +
-                "\n kode keluar: " + inputs.kodeKeluar + 
-                "\n nama pengambil: " + inputs.namaPengambil +
-                "\n quantity: " + inputs.quantity +
-                "\n tgl: " + inputs.tgl + 
-                "\n keterangan: " + inputs.keterangan + 
-                "\n tujuan: " + inputs.tujuan) === true){
-                    
-                    if(check === null) {
-                        console.log("not enough item in inventory");
-                        //newInventory(inputs);
-                        //window.location.reload();
-                    }else{
+        const checkVPCA = await findInventoryVPCA(inputs.namabarang);
+        const checkKKC = await findInventoryKKC(inputs.namabarang);
+       
+        if(proyek === "KANTOR KELURAHAN CILENGGANG"){
+            if(checkKKC.quantity >= inputs.quantity){
+                if(window.confirm(
+                    "confirm adding: " + 
+                    "\n namabarang: " + inputs.namabarang +
+                    "\n nama pengambil: " + inputs.namaPengambil +
+                    "\n quantity: " + inputs.quantity +
+                    "\n tgl: " + inputs.tgl + 
+                    "\n keterangan: " + inputs.keterangan + 
+                    "\n tujuan: " + inputs.tujuan) === true){
+                        
                         await addBarangKeluar(inputs);
-                        window.alert("item added as barang keluar");
+                        window.alert("berhasil menambah item sebagai barang keluar");
                         //addHistory(inputs);
                         inventoryKeluar(inputs);
                         addActivityKeluar(inputs)
                         showModal();
                         window.location.reload();
-                    } 
+                        
+                }
+            }if(checkKKC.quantity < inputs.quantity){
+                window.alert("jumlah barang di inventory tidak cukup")
             }
-        }else{
-            window.alert("jumlah barang di inventory tidak cukup")
         }
+        if(proyek === "VANYA PARK CLUSTER AZURA"){
+            if(checkVPCA.quantity >= inputs.quantity){
+                if(window.confirm(
+                    "confirm adding: " + 
+                    "\n namabarang: " + inputs.namabarang +
+                    "\n nama pengambil: " + inputs.namaPengambil +
+                    "\n quantity: " + inputs.quantity +
+                    "\n tgl: " + inputs.tgl + 
+                    "\n keterangan: " + inputs.keterangan + 
+                    "\n tujuan: " + inputs.tujuan) === true){
+                        
+                        await addBarangKeluar(inputs);
+                        window.alert("berhasil menambah item sebagai barang keluar");
+                        //addHistory(inputs);
+                        inventoryKeluar(inputs);
+                        addActivityKeluar(inputs)
+                        showModal();
+                        window.location.reload();
+                }
+            } 
+            if(checkVPCA.quantity < inputs.quantity){
+                window.alert("jumlah barang di inventory tidak cukup");
+            }
+        }
+        //const check = await findInventory(inputs.namabarang);
+        
         
     }
 
@@ -95,7 +130,8 @@ function BarangKeluarPage(){
                     tgl: barang.tgl,
                     proyek: barang.proyek,
                     keterangan: barang.keterangan,
-                    tujuan: barang.tujuan
+                    tujuan: barang.tujuan,
+                    satuan: barang.satuan
                 }
                 if(newBarang.proyek === proyek){
                     rowsData.push(newBarang);
@@ -144,6 +180,23 @@ function BarangKeluarPage(){
         }
         getProyekAPI();
     }, [])
+
+    const [satuan, setSatuan] = useState([]);
+    useEffect(() => {
+        async function getSatuanAPI(){
+            const data = await getAllSatuan();
+            let rowsData = []
+            for (const barang of data){
+                const newBarang = {
+                    //kodebarang: barang.kodebarang,
+                    satuan: barang.satuan
+                }
+                rowsData.push(newBarang);
+            }
+            setSatuan(rowsData);
+        }
+        getSatuanAPI();
+    }, [])
     
     const columns = [
         {
@@ -167,11 +220,10 @@ function BarangKeluarPage(){
             text: 'Qty',
             sort: true
         },
-        /*{
-            dataField: 'progress',
-            text: 'Progress',
-    
-        },*/
+        {
+            dataField: 'satuan',
+            text: 'Satuan'
+        },
         {
             dataField: 'tgl',
             text: 'Tgl',
@@ -234,8 +286,21 @@ function BarangKeluarPage(){
                                     <option key={index}>{item.namabarang}</option>
                                 )}
                             </datalist>
-                            <h4>Quantity:</h4>
-                            <input type="number" class="form-control" name="quantity" value={inputs.quantity} onChange={handleInputChange} min="0" required></input>
+                            <div className="twoside">
+                        <h4>Quantity:</h4>
+                        <input type="number" step="any" class="form-control" name="quantity" value={inputs.quantity } 
+                        onChange={handleInputChange} min="1" placeholder="wajib isi" required/>
+                        </div>
+                        <div className="twoside">
+                        <h4>Satuan:</h4>
+                        <input type="text" class="form-control" list="satuan" name="satuan" value={inputs.satuan} 
+                        onChange={handleInputChange} required autoComplete="off" placeholder="wajib isi"></input>
+                        <datalist id="satuan" name="satuan">
+                            {satuan.map((item, index) => 
+                                <option key={index} value={item.satuan}></option>
+                            )}
+                        </datalist>      
+                        </div>
                             <h4>Nama Pengambil:</h4>
                             <input type="text" class="form-control" name="namaPengambil" value={inputs.namaPengambil} onChange={handleInputChange} required></input>
                             {/*<h4>Progress:</h4>
@@ -243,7 +308,7 @@ function BarangKeluarPage(){
                                 */}
                             <h4>Tanggal:</h4>
                             <input type="date" class="form-control" name="tgl" value={inputs.tgl} onChange={handleInputChange}
-                             min={datePickerIconst} max={datePickerIconst} required></input>
+                             min={minDate} max={datePickerIconst} required></input>
                             <br/>
                             <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" onClick={pindahBarang}></input>

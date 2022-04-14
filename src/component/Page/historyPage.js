@@ -22,7 +22,8 @@ function HistoryPage(){
                     tgl: barang.tgl,
                     lokasi: barang.lokasi,
                     status: barang.status,
-                    proyek: barang.proyek
+                    proyek: barang.proyek,
+                    satuan: barang.satuan
                 }
                 if(newBarang.proyek === proyek){
                     rowsData.push(newBarang);
@@ -38,7 +39,8 @@ function HistoryPage(){
                     tgl: barang.tgl,
                     lokasi: barang.lokasi,
                     status: barang.status,
-                    proyek: barang.proyek
+                    proyek: barang.proyek,
+                    satuan: barang.satuan
                 }
                 if(newBarang.proyek === proyek){
                     rowsData.push(newBarang);
@@ -55,7 +57,8 @@ function HistoryPage(){
                     tgl: barang.tgl,
                     lokasi: barang.lokasi,
                     status: barang.status,
-                    proyek: barang.proyek
+                    proyek: barang.proyek,
+                    satuan: barang.satuan
                 }
                 if(newBarang.proyek === proyek){
                     rowsData.push(newBarang);
@@ -81,6 +84,10 @@ function HistoryPage(){
             sort: true
         },
         {
+            dataField: 'satuan',
+            text: 'Satuan'
+        },
+        {
             dataField: 'tgl',
             text: 'Tgl',
             filter: dateFilter(),
@@ -98,6 +105,7 @@ function HistoryPage(){
             sort: true,
             filter: textFilter()
         }
+        
     ];
     return(
         <>

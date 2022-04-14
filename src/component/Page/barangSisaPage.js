@@ -4,7 +4,8 @@ import { Button, CloseButton, Modal } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom"
 import * as BsIcons from "react-icons/bs";
 import { getAllBarangSisa, getAllMasterBarang, getAllBarangKeluar, addBarangSisa, 
-    findInventory, newInventory, inventoryMasuk, addActivitySisa, addHistory, getUserName, getSelectedProyek, getAllSupplier} from "../../repository";
+    findInventoryVPCA, findInventoryKKC, newInventory, inventoryMasuk, 
+    addActivitySisa, addHistory, getUserName, getSelectedProyek, getAllSupplier, getAllSatuan} from "../../repository";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
 import paginationFactory from "react-bootstrap-table2-paginator";
@@ -15,6 +16,16 @@ function BarangSisa(){
     const navigate = useNavigate();
     const user = getUserName();
     const proyek = getSelectedProyek();
+
+    //max-min input date
+    const day = new Date();
+    var mintgl = day.getDate() - 3;
+    var today = day.getDate();
+    var year = day.getFullYear();
+    var month = day.getMonth();
+    if(month < 10){month = "0" + month}
+    const minDate = year + '-' + month + "-" + "0" + mintgl;
+
     const initialState = {
         //kodebarang:"",
         namabarang: "",
@@ -31,7 +42,22 @@ function BarangSisa(){
         proyek: proyek,
         keterangan: ''
     }
-
+    const [satuan, setSatuan] = useState([]);
+    useEffect(() => {
+        async function getSatuanAPI(){
+            const data = await getAllSatuan();
+            let rowsData = []
+            for (const barang of data){
+                const newBarang = {
+                    //kodebarang: barang.kodebarang,
+                    satuan: barang.satuan
+                }
+                rowsData.push(newBarang);
+            }
+            setSatuan(rowsData);
+        }
+        getSatuanAPI();
+    }, [])
     const columns = [
         {
             dataField: 'kodesisa',
@@ -54,7 +80,10 @@ function BarangSisa(){
             text: 'Qty',
             sort: true
         },
-        
+        {
+            dataField: 'satuan',
+            text: 'Satuan'
+        },
         {
             dataField: 'tgl',
             text: 'Tgl',
@@ -138,7 +167,7 @@ function BarangSisa(){
 
     const add = async (event) => {
         event.preventDefault();
-        event.preventDefault();
+        
         if(window.confirm(
             "confirm adding: " + 
             "\n namabarang: " + inputs.namabarang +
@@ -147,10 +176,12 @@ function BarangSisa(){
             "\n tgl: " + inputs.tgl +
             "\n lokasi: " + inputs.lokasi + 
             "\n keterangan: " + inputs.keterangan) === true){
-                 await addBarangSisa(inputs);
+                await addBarangSisa(inputs);
                 //addHistory(inputs)
-                addActivitySisa(inputs)
-                const check = await findInventory(inputs.namabarang);
+                inventoryMasuk(inputs);
+                addActivitySisa(inputs);
+                window.location.reload();
+                /*const check = await findInventory(inputs.namabarang);
                 if(check === null){
                     newInventory(inputs);
                     showModal();
@@ -160,7 +191,7 @@ function BarangSisa(){
                     inventoryMasuk(inputs);
                     window.alert("item added as barang sisa");
                     window.location.reload();
-                } 
+                } */
         }
         
     }
@@ -225,13 +256,24 @@ function BarangSisa(){
                         <h4>Nama Penerima:</h4>
                         <input type="text" class="form-control" name="namaPenerima" value={inputs.namaPenerima} 
                         onChange={handleInputChange} placeholder="wajib isi" required/>
+                        <div className="twoside">
                         <h4>Quantity:</h4>
-                        <input type="number" class="form-control" name="quantity" value={inputs.quantity} 
-                        onChange={handleInputChange} min="0" placeholder="wajib isi"required/>
-                        
+                        <input type="number" step="any" class="form-control" name="quantity" value={inputs.quantity } 
+                        onChange={handleInputChange} min="1" placeholder="wajib isi" required/>
+                        </div>
+                        <div className="twoside">
+                        <h4>Satuan:</h4>
+                        <input type="text" class="form-control" list="satuan" name="satuan" value={inputs.satuan} 
+                        onChange={handleInputChange} required autoComplete="off" placeholder="wajib isi"></input>
+                        <datalist id="satuan" name="satuan">
+                            {satuan.map((item, index) => 
+                                <option key={index} value={item.satuan}></option>
+                            )}
+                        </datalist>      
+                        </div>
                         <h4>Tanggal Masuk:</h4>
                         <input type="date" class="form-control" name="tgl" value={inputs.tgl} onChange={handleInputChange} 
-                         min={datePickerIconst} max={datePickerIconst} required/>
+                         min={minDate} max={datePickerIconst} required/>
                         <h4>Lokasi:</h4>
                         <input type="text" class="form-control" name="lokasi" value={inputs.lokasi} 
                         onChange={handleInputChange} placeholder="wajib isi" required/>

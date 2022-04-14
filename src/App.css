@@ -84,6 +84,7 @@ input{
 
 Button{
   width: flex-start;
+  z-index: 1;
 }
 
 .pilihProyek{
@@ -93,3 +94,9 @@ Button{
 .side{
   width: 10vw
 }
+
+.react-bootstrap-table table {
+  table-layout: auto;
+}
+  
+  

@@ -17,7 +17,9 @@ function AssetPage() {
         entry: '',
         lokasi: '',
         proyek: proyek,
-        username: user.username
+        username: user.username,
+        Pic: '',
+        keterangan: ''
     }
 
     const [inputs, setInputs] = useState(initialState);    
@@ -36,7 +38,9 @@ function AssetPage() {
                     nomor: barang.nomor,
                     entry: barang.entry,
                     lokasi: barang.lokasi,
-                    proyek: barang.proyek
+                    proyek: barang.proyek, 
+                    Pic: barang.Pic,
+                    keterangan: barang.keterangan
                 }
                 if(newBarang.proyek === proyek){
                     optionData.push(newBarang);
@@ -69,6 +73,16 @@ function AssetPage() {
         {
             dataField: 'lokasi',
             text: 'lokasi'
+        },
+        
+        {
+            dataField: 'Pic',
+            text: 'Pic'
+            
+        },
+        {
+            dataField: 'keterangan',
+            text: 'keterangan'
         }];
 
     const [modal, setModal] = useState();
@@ -86,7 +100,9 @@ function AssetPage() {
             "\n Nama Asset: " + inputs.asset +
             "\n Nomor: " + inputs.nomor + 
             "\n Tgl Entry: " + inputs.entry+ 
-            "\n Lokasi: " + inputs.lokasi) === true){
+            "\n Lokasi: " + inputs.lokasi + 
+            "\n keterangan: " + inputs.keterangan +
+            "\n Pic: " + inputs.Pic) === true){
                 addAsset(inputs);
                 addActivityAsset(inputs);
                 showModal();
@@ -109,23 +125,23 @@ function AssetPage() {
     const rowEvent = {
         onDoubleClick: (event, row) => {
             setUpdate(row);
-            console.log(update);
             updating();
         }
     }
 
-    const alterAsset = (event) => {
-        event.preventDefault();
+    const alterAsset = () => {
+        
         if(window.confirm(
             "confirm update asset: " + update.asset + "-" + update.nomor +
             "\n Tgl Entry: " + update.entry + 
-            "\n Lokasi: " + update.lokasi) === true){
+            "\n Lokasi: " + update.lokasi + 
+            "\n keterangan: " + update.keterangan +
+            "\n Pic: " + update.Pic) === true){
                 updateAsset(update);
                 window.alert('asset updated');
                 updating();
                 window.location.reload();
-            }
-        
+        }
     }
 
     return(
@@ -133,6 +149,7 @@ function AssetPage() {
         <Navbar />
         <h2 text-align="center">Asset</h2>
         <br/>
+        <h4>double click to update</h4>
         <BootstrapTable keyField='kodemasuk' data={rows} columns={ columns } 
         filter={ filterFactory() } pagination={paginationFactory()} 
         striped hover
@@ -156,13 +173,19 @@ function AssetPage() {
                 value={inputs.asset} onChange={handleInputChange} required autoComplete="off"></input>
                 <h4>Nomor Asset:</h4>
                 <input type="text" class="form-control" name="nomor" value={inputs.nomor} 
-                onChange={handleInputChange} min="0" placeholder="wajib isi"required/>
+                onChange={handleInputChange} min="0" placeholder="wajib isi" autoComplete="off" required/>
                 <h4>Tgl Entry:</h4>
-                <input type="date" class="form-control" name="entry" max={datePickerIconst} min={datePickerIconst} value={inputs.entry} 
+                <input type="date" class="form-control" name="entry" max={datePickerIconst} value={inputs.entry} 
                 onChange={handleInputChange} placeholder="wajib isi" required/>
                 <h4>Lokasi:</h4>
                 <input type="text" class="form-control" name="lokasi" value={inputs.lokasi} 
-                onChange={handleInputChange} required/>
+                onChange={handleInputChange} placeholder="wajib isi" required/>
+                <h4>Pic:</h4>
+                <input type="text" class="form-control" name="Pic" value={inputs.Pic} 
+                onChange={handleInputChange} placeholder="wajib isi" required/>
+                <h4>Keterangan:</h4>
+                <input type="text" class="form-control" name="keterangan" value={inputs.keterangan} 
+                onChange={handleInputChange} placeholder="wajib isi" required/>
                 <br/><br/>
                 <div className="twoside">
                     <Button class="btn btn-danger" onClick={resetInput}>Reset</Button>
@@ -186,11 +209,17 @@ function AssetPage() {
         <Modal.Body>{
             <form onSubmit={alterAsset}>
                 <h4>Tgl Entry:</h4>
-                <input type="date" class="form-control" name="entry" max={datePickerIconst} min={datePickerIconst} value={update.entry} 
+                <input type="date" class="form-control" name="entry" max={datePickerIconst} value={update.entry} 
                 onChange={handleUpdateChange} placeholder="wajib isi" required/>
                 <h4>Lokasi:</h4>
                 <input type="text" class="form-control" name="lokasi" value={update.lokasi} 
                 onChange={handleUpdateChange} required/>
+                <h4>Pic:</h4>
+                <input type="text" class="form-control" name="Pic" value={update.Pic} 
+                onChange={handleUpdateChange} placeholder="wajib isi" required/>
+                <h4>Keterangan:</h4>
+                <input type="text" class="form-control" name="keterangan" value={update.keterangan} 
+                onChange={handleUpdateChange} placeholder="wajib isi" required/>
                 <br/><br/>
                 <div className="twoside">
                     <Button class="btn btn-danger" onClick={resetInput}>Reset</Button>

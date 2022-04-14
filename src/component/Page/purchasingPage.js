@@ -35,6 +35,16 @@ function PurchasingPage(){
         setModal(!modal);
     };
 
+    //max-min input date
+    const day = new Date();
+    var mintgl = day.getDate() - 3;
+    var today = day.getDate();
+    var year = day.getFullYear();
+    var month = day.getMonth();
+    if(month < 10){month = "0" + month}
+    let minDate = year + '-' + month + '-' + mintgl;
+    var maxDate = year + '-' + month + '-' + today;
+
     const [inputs, setInputs] = useState(initialState);
 
     const handleInputChange = async (event) => {
@@ -212,7 +222,7 @@ function PurchasingPage(){
             keyField='kodePO' data={ rows } columns={ columns } 
             filter={ filterFactory() } pagination={paginationFactory()} striped hover/>
             <div className="addButton">
-                <BsIcons.BsFillPlusCircleFill size={50} onClick = {showModal} />
+                <BsIcons.BsFillPlusCircleFill size={50} onClick = {showModal} wrapperClasses="table-responsive" />
             </div>
 
             <Modal
@@ -251,13 +261,18 @@ function PurchasingPage(){
                             )}
                         </select>
                         <h4>No PO:</h4> 
-                        <input type="text" class="form-control" name="kodePO" value={inputs.kodePO} onChange={handleInputChange} 
+                        <input type="text" class="form-control" list="kodePO" name="kodePO" value={inputs.kodePO} onChange={handleInputChange} 
                         required autoComplete="off"></input>
+                        <datalist id="kodePO" name="kodePO">
+                                {PO.map((item, index) => 
+                                    <option key={index}>{item.kodePO}</option>
+                                )}
+                            </datalist>
                         
                         {/*<input type="text" name="supplier" value={inputs.supplier} onChange={handleInputChange} required></input>*/}
                         <h4>Tanggal:</h4>
                             <input type="date" class="form-control" name="tgl" value={inputs.tgl} onChange={handleInputChange} 
-                            max={datePickerIconst} required></input>                        
+                            min={minDate} max={maxDate} required></input>                        
                         <button type="submit" hidden></button>
                         <br/><br/>
                         <div className="twoside">

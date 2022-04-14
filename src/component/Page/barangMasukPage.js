@@ -6,7 +6,8 @@ import * as BsIcons from "react-icons/bs";
 import {  
     addBarangMasuk, getAllBarangMasuk, getAllMasterBarang, 
     addHistory, getKodePO, seeAllPurchasing, inventoryMasuk, 
-    findInventory, newInventory, getUserName, addActivityMasuk, getSelectedProyek, getBarangMasukPO, getAllSupplier, getInfo, getAllBarangKeluar
+    findInventory, newInventory, getUserName, addActivityMasuk, getSelectedProyek, getBarangMasukPO, 
+    getAllSupplier, getInfo, getAllBarangKeluar, getAllSatuan, getSuratJalan, addBanyakBarangMasuk
 } from "../../repository";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
@@ -14,34 +15,70 @@ import "react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 import paginationFactory from "react-bootstrap-table2-paginator";
 import Navbar from "../Menu/navbar";
 //import { getKodePO } from "../../../../back-end/controller/purchasingController";
+
 function BarangMasukPage(){
 
     const user = getUserName();
-    
     const datePickerIconst = new Date().toLocaleDateString('en-ca');
+    
     const navigate = useNavigate();
     const proyek = getSelectedProyek()
     const initialState = {
         //kodebarang:"",
         namabarang: "",
         //kodemasuk: "", 
-        kodePO: "",
+        //kodePO: [],
         namaPenerima: "",
-        quantity: 0,  
+        quantity: "",  
         noSuratJalan1: "",
         noSuratJalan2: "",
-        tgl: "",
+        tgl: datePickerIconst,
         lokasi: "",
-        action: "barang masuk",
+        action: "",
         username: user.username,
         proyek: proyek,
-        keterangan: ''
+        keterangan: "",
+        satuan: ""
     }
-
-    const [modal, setModal] = useState(false);
 
     const [inputs, setInputs] = useState(initialState);
     
+    const [arrayBarang, setArrayBarang] = useState([]);
+    let addArrayBarang = () => {
+        setArrayBarang([...arrayBarang, {
+            namabarang: "", 
+            quantity: "", 
+            satuan: "", 
+            noSuratJalan: inputs.noSuratJalan1 + inputs.noSuratJalan2,
+            namaPenerima: inputs.namaPenerima,
+            tgl: inputs.tgl,
+            lokasi: inputs.lokasi,
+            status: "masuk",
+            username: inputs.username,
+            keterangan: "",
+            proyek: inputs.proyek
+        }])
+    }
+    
+    let resetArrayBarang = () => {
+        setArrayBarang([])
+    }
+    let handleArrayBarang = (i, e) => {
+        let newArrayBarang = [...arrayBarang];
+        newArrayBarang[i][e.target.name] = e.target.value;
+        setArrayBarang(newArrayBarang);
+        console.log(arrayBarang[i]);
+     }
+
+    //max-min input date
+    const day = new Date();
+    var mintgl = day.getDate() - 3;
+    var year = day.getFullYear();
+    var month = day.getMonth() + 1;
+    if(month < 10){month = "0" + month}
+    let minDate = year + '-' + month + '-' + mintgl;
+    
+    const [modal, setModal] = useState(false);
     const [search, setSearch] = useState("");
     const handleSearch = (event) => {
         event.preventDefault();
@@ -62,7 +99,8 @@ function BarangMasukPage(){
                     kodemasuk: barang.kodemasuk, 
                     noSuratJalan: barang.noSuratJalan,
                     namaPenerima: barang.namaPenerima,
-                    quantity: barang.quantity,  
+                    quantity: barang.quantity, 
+                    satuan: barang.satuan,  
                     tgl: barang.tgl,
                     lokasi: barang.lokasi,
                     proyek: barang.proyek,
@@ -76,6 +114,22 @@ function BarangMasukPage(){
             setRows(rowsData);
         }
         getBarangMasukAPI();
+    }, [])
+    const [satuan, setSatuan] = useState([]);
+    useEffect(() => {
+        async function getSatuanAPI(){
+            const data = await getAllSatuan();
+            let rowsData = []
+            for (const barang of data){
+                const newBarang = {
+                    //kodebarang: barang.kodebarang,
+                    satuan: barang.satuan
+                }
+                rowsData.push(newBarang);
+            }
+            setSatuan(rowsData);
+        }
+        getSatuanAPI();
     }, [])
 
     //data master barang 
@@ -115,6 +169,7 @@ function BarangMasukPage(){
     const showModal = () => {
         setModal(!modal);
         setInputs(initialState);
+        resetArrayBarang();
     };
 
     const choosePO = (item) => {
@@ -146,7 +201,10 @@ function BarangMasukPage(){
     }, []) 
    
 
-    const resetInput = () => setInputs(initialState);
+    const resetInput = () => {
+        setInputs(initialState)
+        resetArrayBarang();
+    };
     const handleInputChange = (event) => {
         setInputs({...inputs, [event.target.name]: event.target.value});
     };
@@ -155,32 +213,37 @@ function BarangMasukPage(){
         event.preventDefault();
         if(window.confirm(
             "confirm adding: " + 
-            "\n namabarang: " + inputs.namabarang +
-            "\n kode PO: " + inputs.kodePO + 
+            "\n namabarang: " + arrayBarang.namabarang +
+            "\n quantity: " + arrayBarang.quantity +
             "\n surat jalan: " + inputs.noSuratJalan1 + inputs.noSuratJalan2 + 
             "\n nama penerima: " + inputs.namaPenerima +
-            "\n quantity: " + inputs.quantity +
             "\n tgl: " + inputs.tgl +
             "\n lokasi: " + inputs.lokasi + 
             "\n keterangan: " + inputs.keterangan) === true){
-                await addBarangMasuk(inputs);
-                window.alert("item added as barang masuk");
-                //addHistory(inputs);
-                addActivityMasuk(inputs);
+                //let noSuratJalan = inputs.noSuratJalan1 + inputs.noSuratJalan2
                 
-                const check = await findInventory(inputs.namabarang);
-                if(check === null) {
+                await addBanyakBarangMasuk(arrayBarang);
+                window.alert("item added as barang masuk");
+                window.location.reload();
+                //addHistory(inputs);
+                //addActivityMasuk(inputs);
+                //inventoryMasuk(inputs);
+                
+                //const check = await findInventory(inputs);
+                //console.log("check" + check);
+                /*if(check === null) {
                     //window.confirm('inventory not found')
                     newInventory(inputs);
                     //window.alert("new inventory added");
                     window.location.reload();
                 }else{
+                    window.alert("updating inventory " + proyek)
                     //window.confirm('inventory found')
                     inventoryMasuk(inputs);
                     //window.alert("inventory updated");
                     window.location.reload();
                 } 
-                
+                */
             }
             
             
@@ -218,6 +281,10 @@ function BarangMasukPage(){
             dataField: 'quantity',
             text: 'Qty',
             sort: true
+        },
+        {
+            dataField: 'satuan',
+            text: 'Satuan'
         },
         {
             dataField: 'noSuratJalan',
@@ -290,7 +357,7 @@ function BarangMasukPage(){
     const pindahBarang = () => {
         setPindah(!pindah);
     }
-    
+
     return(
         <>
           <Navbar />
@@ -323,28 +390,9 @@ function BarangMasukPage(){
                 </Modal.Header>
                 <Modal.Body>
                     <form onSubmit={add}>
-                        <h4>Nama Barang: </h4> 
-                        <input type="text" class="form-control" list="namabarang" name="namabarang" value={inputs.namabarang} 
-                        onChange={handleInputChange} required autoComplete="off" placeholder="wajib isi"></input>
-                        <datalist id="namabarang" name="namabarang">
-                            {options.map((item, index) => 
-                                <option key={index} value={item.namabarang}></option>
-                            )}
-                        </datalist>
                         <h4>Nama Penerima:</h4>
                         <input type="text" class="form-control" name="namaPenerima" value={inputs.namaPenerima} 
                         onChange={handleInputChange} placeholder="wajib isi" required/>
-                       {/* <h4>No. PO</h4>
-                        <input type="text" class="form-control" list="kodePO" name="kodePO" value={inputs.kodePO} 
-                        onChange={handleInputChange} placeholder="sesuai nomor PO yang tertulis di namabarang" required autoComplete="off"></input>
-                        <datalist id="kodePO" name="kodePO">
-                            {PO.map((item, index) => 
-                                <option key={index}>{item.kodePO}</option>
-                            )}
-                            </datalist>*/}
-                        <h4>Quantity:</h4>
-                        <input type="number" step="any" class="form-control" name="quantity" value={inputs.quantity } 
-                        onChange={handleInputChange} min="1" placeholder="wajib isi" required/>
                         <br/>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" onClick={pindahBarang}></input>
@@ -356,7 +404,7 @@ function BarangMasukPage(){
                         { pindah ?
                         <>
                         <h4>Keterangan:</h4>
-                        <input type="text" class="form-control" name="keterangan" value={inputs.keterangan} onChange={handleInputChange} required/>
+                        <input type="text" class="form-control" name="keterangan" value={inputs.keterangan} placeholder="wajib isi" onChange={handleInputChange} required/>
                         </>
                         :
                         <>
@@ -374,26 +422,47 @@ function BarangMasukPage(){
                             <input type="text" class="side" list="noSuratJalan2" name="noSuratJalan2" value={inputs.noSuratJalan2} 
                             onChange={handleInputChange} placeholder="nomor surat jalan" required/>
                         </div>
-                        <h4>Keterangan:</h4>
-                        <input type="text" class="form-control" name="keterangan" value={inputs.keterangan} onChange={handleInputChange}/>
-                        
                         </>
                         }
-                        
                         <h4>Tanggal Masuk:</h4>
                         <input type="date" class="form-control" name="tgl" value={inputs.tgl} 
-                        onChange={handleInputChange} min={datePickerIconst} max={datePickerIconst} required/>
+                        onChange={handleInputChange} min={minDate} max={datePickerIconst} required/>
                         <h4>Lokasi:</h4>
                         <input type="text" class="form-control" name="lokasi" value={inputs.lokasi} 
                         onChange={handleInputChange} placeholder="wajib isi" required/>
-                        {/*<h4>pindah proyek: </h4>
-                        <div class="form-check">
-                        <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1"/>
-                        <label class="form-check-label" for="exampleRadios1">
-                            yes
-                        </label>
-                            </div>*/}
+                        { arrayBarang.map((item, index) => (
+                            <div key={index}>
+                         <h4>Nama Barang {index + 1}: </h4> 
+                         <input type="text" class="form-control" list="namabarang" name="namabarang" value={item.namabarang} 
+                         onChange={e => handleArrayBarang(index, e)} required autoComplete="off" placeholder="wajib isi"></input>
+                         <datalist id="namabarang" name="namabarang">
+                             {options.map((item, index) => 
+                                 <option key={index} value={item.namabarang}></option>
+                             )}
+                         </datalist>
+                         <div className="twoside">
+                         <h4>Quantity:</h4>
+                         <input type="number" step="any" class="form-control" name="quantity" value={item.quantity } 
+                         onChange={e => handleArrayBarang(index, e)} min="1" placeholder="wajib isi" required/>
+                         </div>
+                         <div className="twoside">
+                         <h4>Satuan:</h4>
+                         <input type="text" class="form-control" list="satuan" name="satuan" value={item.satuan} 
+                         onChange={e => handleArrayBarang(index, e)} required autoComplete="off" placeholder="wajib isi"></input>
+                         <datalist id="satuan" name="satuan">
+                             {satuan.map((item, index) => 
+                                 <option key={index} value={item.satuan}></option>
+                             )}
+                         </datalist>      
+                         </div>
+                        <h4>Keterangan Barang {index + 1}:</h4>
+                        <input type="text" class="form-control" name="keterangan" value={item.keterangan} onChange={e => handleArrayBarang(index, e)}/>
                         
+                         </div>
+                        ))
+                        }
+                        <br/>
+                        <a onClick={addArrayBarang} href="#">tambah barang</a>
                         <br/><br/>
                         <div className="twoside">
                             <Button class="btn btn-danger" onClick={resetInput}>Reset</Button>
@@ -404,39 +473,6 @@ function BarangMasukPage(){
                     </form>
                 </Modal.Body>
                 </Modal>
-                {/*<Modal 
-                show={konfirmasi}
-                size="lg-down"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered>
-                <Modal.Header>
-                <Modal.Title id="contained-modal-title-vcenter">Konfirmasi Barang Masuk</Modal.Title>
-                    <CloseButton onClick={showKonfirmasi}/>
-                </Modal.Header>
-                <Modal.Body>
-                    <h4>Nama Barang:</h4>
-                    <input type="text" disabled> {inputs.namabarang} </input>
-                    <h4>Nama Penerima:</h4>
-                    <input type="text" disabled> {inputs.namaPenerima} </input>
-                    <h4>No. PO:</h4>
-                    <input type="text" disabled> {inputs.kodePO} </input>
-                    <h4>Quantity:</h4>
-                    <text> {inputs.quantity} </text>
-                    <input type="text" disabled> {inputs.quantity} </input>
-                    <h4>No Surat Jalan:</h4>
-                    <input type="text" disabled> {inputs.noSuratJalan} </input>
-                    <h4>Tanggal Masuk:</h4>
-                    <input type="text" disabled> {inputs.tgl} </input>
-                    <h4>Lokasi:</h4>
-                    <input type="text" disabled> {inputs.lokasi} </input>
-                    <div className="twoside">
-                        <Button class="btn btn-danger" onClick={showKonfirmasi}>Cancel</Button>
-                    </div>
-                    <div className="twoside">
-                        <Button class="btn btn-primary" onClick={add}>Add</Button>
-                    </div>
-                </Modal.Body>
-                </Modal>*/}
         </>
     );
 }

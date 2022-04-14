@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { seeAllProyek, setSelectedProyek } from "../../repository";
-
+import "../../App.css"
 
 function ProyekPage() {
 
@@ -58,8 +58,8 @@ function ProyekPage() {
                                 )}
                             </select>
                             <br/><br/>    
-                            <Button onClick={back}>Back</Button>
-                            <Button type="submit">Confirm</Button>
+                            <Button onClick={back}>Back</Button>                            
+                            <Button type="submit">Confirm</Button>            
                         </form>
 
                 </div>

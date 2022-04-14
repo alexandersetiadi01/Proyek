@@ -63,13 +63,13 @@ export function UnknownPage(){
     </div>
   )
 }
-
+/*
 function renderPage(){
   if(getRole === "ADMIN"){
     return(
       <Routes>
            
-              {/*<Route element={<PrivateRoutes isLoggedIn={account}/>}></Route>*/}
+              <Route element={<PrivateRoutes isLoggedIn={account}/>}></Route>
            
               <Route path="/Master_Barang" element={<MasterBarangPage/>}></Route>
               <Route path="/Purchasing" element={<PurchasingPage/>}></Route>
@@ -98,15 +98,12 @@ function renderPage(){
     )
   }
 }
-
+*/
 function App() {
   const [account, setAccount] = useState();
   useEffect(() => {
     setAccount(getLogin);
   });
-
-  const [user, setUser] = useState();
-
 
   return(
     <div className="App">

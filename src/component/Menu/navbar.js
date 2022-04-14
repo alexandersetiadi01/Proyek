@@ -44,7 +44,9 @@ function Navbar(){
                         </li>
                     )
                 })}
-                <li> </li>
+            </ul>
+            <ul>
+                <button onClick={logout}>Logout</button>
             </ul>
         </nav>
                
