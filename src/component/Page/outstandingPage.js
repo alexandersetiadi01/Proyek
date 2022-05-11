@@ -75,7 +75,7 @@ function OutstandingPage() {
         },
         {
             dataField: 'tgl',
-            text: 'tgl terbaru',
+            text: 'tgl',
         }/*,
         {
             dataField: 'keterangan',

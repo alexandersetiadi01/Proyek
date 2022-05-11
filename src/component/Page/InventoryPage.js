@@ -15,7 +15,7 @@ function InventoryPage(){
     useEffect(() => {
         async function getinventoryAPI(){
             let rowsData = []
-            
+            /*
                 if(proyek === "VANYA PARK CLUSTER AZURA"){
                     const data = await getinventoryVPCA();
                     for (const barang of data){
@@ -101,7 +101,7 @@ function InventoryPage(){
                     }
                 }
                 
-               /*
+               */
             const data = await getInventory();
             for (const barang of data){
                 if(barang.proyek === proyek){
@@ -115,7 +115,7 @@ function InventoryPage(){
                     rowsData.push(newBarang);
                 }
                 
-            }*/
+            }
             setStock(rowsData);
             
         }

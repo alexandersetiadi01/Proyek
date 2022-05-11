@@ -74,7 +74,7 @@ function BarangMasukPage(){
         let newArrayBarang = [...arrayBarang];
         newArrayBarang[i][e.target.name] = e.target.value;
         setArrayBarang(newArrayBarang);
-        console.log(arrayBarang)
+        
         //console.log(arrayBarang[i]);
      }
     let kodePOArrayBarang = (i, kodePO) => {
@@ -150,8 +150,8 @@ function BarangMasukPage(){
     const[PO, setPO] = useState([]);
     useEffect(() => {
         async function getNamaBarangAPI(){
-            const data = await seeAllOutstanding();
             let optionData = []
+            const data = await seeAllOutstanding();
             for (const barang of data){
                 const newBarang = {
                     namabarang: barang.namabarang,
@@ -178,6 +178,28 @@ function BarangMasukPage(){
         }
         getNamaBarangAPI();
     }, [])
+
+   /* const [optNamabarang, setOptNamabarang] = useState();
+    useEffect(() => {
+        async function getOptNamabarangAPI(){
+            let optionData = []
+            const data = await seeAllOutstanding();
+            for (const barang of data){
+                const newBarang = {
+                    namabarang: barang.namabarang,
+                    proyek: barang.proyek,
+                    supplier: barang.supplier
+                }
+                if(newBarang.proyek === proyek){
+                    optionData.push(newBarang);
+                }
+                
+            }
+            setOptNamabarang(optionData);
+
+        }
+        getOptNamabarangAPI();
+    }, [])*/
 
     const showModal = () => {
         setModal(!modal);
@@ -220,6 +242,7 @@ function BarangMasukPage(){
     };
     const handleInputChange = (event) => {
         setInputs({...inputs, [event.target.name]: event.target.value});
+        
     };
     
     const [adding, setAdding] = useState(true);
@@ -236,9 +259,7 @@ function BarangMasukPage(){
             "\n lokasi: " + inputs.lokasi + 
             "\n keterangan: " + inputs.keterangan) === true){
                 //let noSuratJalan = inputs.noSuratJalan1 + inputs.noSuratJalan2
-                
-                await updateOutstanding(arrayBarang)
-                
+    
                 for(let i = 0; i < arrayBarang.length; i++){ //nanti bikinnya di function konversi biar gk keliatan ribet
                     if(arrayBarang[i].namabarang === "Papan 2/20. P 4mtr"){
                         /*if(arrayBarang[i].keterangan === ""){
@@ -273,14 +294,10 @@ function BarangMasukPage(){
                 
                 await addBanyakBarangMasuk(arrayBarang);
                 await inventoryMasuk(arrayBarang);
-                
-                window.alert("item added as barang masuk");
+                await updateOutstanding(arrayBarang);
                 addActivityMasuk(inputs);
-        
+                window.alert("item added as barang masuk");
                 window.location.reload();
-                //addHistory(inputs);
-                
-                
             }
         //showKonfirmasi();
         //navigate("/Barang_Masuk");   
@@ -336,6 +353,11 @@ function BarangMasukPage(){
             dataField: 'keterangan',
             text: 'Keterangan'
         }];
+    
+    const defaultSorted = [{
+        dataField: 'tgl', // if dataField is not match to any column you defined, it will be ignored.
+        order: 'desc' // desc or asc
+    }];
 /*
     const selectRow = {
         mode: 'checkbox',
@@ -395,7 +417,7 @@ function BarangMasukPage(){
             
             <BootstrapTable keyField='kodemasuk' data={ rows } columns={ columns } 
             filter={ filterFactory() } pagination={paginationFactory()} 
-            
+            defaultSorted
             hover/>
                     
             <div>

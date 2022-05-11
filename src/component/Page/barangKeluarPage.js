@@ -3,7 +3,7 @@ import { Button, CloseButton, Modal } from "react-bootstrap";
 import * as BsIcons from "react-icons/bs";
 import { addBarangKeluar, getAllBarangKeluar, getAllBarangMasuk,
     findInventoryVPCA, findInventoryKKC, newInventory, inventoryKeluar, 
-    addActivityKeluar, getUserName, getSelectedProyek, seeAllProyek, getAllSatuan, findInventoryGS, findInventoryGL, findInventoryGC, findInventorySLA16, findInventoryKCN } from "../../repository";
+    addActivityKeluar, getUserName, getSelectedProyek, seeAllProyek, getAllSatuan, findInventoryGS, findInventoryGL, findInventoryGC, findInventorySLA16, findInventoryKCN, findInventory } from "../../repository";
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
@@ -53,6 +53,33 @@ function BarangKeluarPage(){
 
     const keluarinBarang = async (event) => {
         event.preventDefault();
+        const check = await findInventory(inputs.namabarang, inputs.proyek);
+        console.log(check);
+        if(check.quantity >= inputs.quantity){
+            if(window.confirm(
+                "confirm adding: " + 
+                "\n namabarang: " + inputs.namabarang +
+                "\n nama pengambil: " + inputs.namaPengambil +
+                "\n quantity: " + inputs.quantity +
+                "\n tgl: " + inputs.tgl + 
+                "\n keterangan: " + inputs.keterangan + 
+                "\n tujuan: " + inputs.tujuan) === true){
+                    
+                    await addBarangKeluar(inputs);
+                    window.alert("berhasil menambah item sebagai barang keluar");
+                    //addHistory(inputs);
+                    inventoryKeluar(inputs);
+                    addActivityKeluar(inputs)
+                    showModal();
+                    window.location.reload();
+                    
+            }
+        }
+        if(check.quantity < inputs.quantity){
+            window.alert("jumlah barang di inventory tidak cukup")
+        }
+        
+        /*
         if(proyek === "KANTOR KELURAHAN CILENGGANG"){
             const checkKKC = await findInventoryKKC(inputs.namabarang);
             if(checkKKC.quantity >= inputs.quantity){
@@ -231,7 +258,7 @@ function BarangKeluarPage(){
                 window.alert("jumlah barang di inventory tidak cukup");
             }
         }
-        //const check = await findInventory(inputs.namabarang);
+        //const check = await findInventory(inputs.namabarang); */
     }
 
     const [rows, setRows] = useState([]);

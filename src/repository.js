@@ -156,6 +156,12 @@ async function newInventory(barang){
     return response.data;
 }
 
+async function findInventory(namabarang, proyek){
+    const response = await axios.get(API_HOST + "/api/inventory/find", {params:{namabarang, proyek}});
+
+    return response.data;
+}
+
 async function findInventoryVPCA(namabarang){
     const response = await axios.get(API_HOST + "/api/inventory/findVanyaParkClusterAzura", {params:{namabarang}});
 
@@ -448,7 +454,7 @@ export{
     addBarangKeluar, getAllBarangKeluar,
     getinventoryVPCA, getinventoryKKC, getinventoryGC, getinventoryGL, getinventoryGS, getinventoryKCN, getinventorySLA16, getInventory,
     inventoryKeluar, inventoryMasuk, newInventory, 
-    findInventoryKKC, findInventoryVPCA, findInventoryGC, findInventoryGL, findInventoryGS, findInventoryKCN, findInventorySLA16,
+    findInventoryKKC, findInventoryVPCA, findInventoryGC, findInventoryGL, findInventoryGS, findInventoryKCN, findInventorySLA16, findInventory,
     getHistory, addHistory,
     getUser, register, userList, setUserName, getUserName, updateUser,
     seeAllPurchasing, addPurchasing, getKodePO, getInfo,
