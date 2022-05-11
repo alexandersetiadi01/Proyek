@@ -7,7 +7,7 @@ import {
     addBarangMasuk, getAllBarangMasuk, getAllMasterBarang, 
     addHistory, getKodePO, seeAllPurchasing, inventoryMasuk, 
     findInventory, newInventory, getUserName, addActivityMasuk, getSelectedProyek, getBarangMasukPO, 
-    getAllSupplier, getInfo, getAllBarangKeluar, getAllSatuan, getSuratJalan, addBanyakBarangMasuk
+    getAllSupplier, getInfo, getAllBarangKeluar, getAllSatuan, getSuratJalan, addBanyakBarangMasuk, selectOutstanding, updateOutstanding, seeAllOutstanding
 } from "../../repository";
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
@@ -38,7 +38,9 @@ function BarangMasukPage(){
         username: user.username,
         proyek: proyek,
         keterangan: "",
-        satuan: ""
+        satuan: "",
+        supplier: "",
+        action: "barang masuk"
     }
 
     const [inputs, setInputs] = useState(initialState);
@@ -56,10 +58,15 @@ function BarangMasukPage(){
             status: "masuk",
             username: inputs.username,
             keterangan: "",
-            proyek: inputs.proyek
+            proyek: inputs.proyek,
+            supplier: inputs.supplier
         }])
     }
     
+    let setKodePO = (kodePO) =>{
+        setInputs({kodePO: kodePO})
+    }
+
     let resetArrayBarang = () => {
         setArrayBarang([])
     }
@@ -67,7 +74,12 @@ function BarangMasukPage(){
         let newArrayBarang = [...arrayBarang];
         newArrayBarang[i][e.target.name] = e.target.value;
         setArrayBarang(newArrayBarang);
-        console.log(arrayBarang[i]);
+        console.log(arrayBarang)
+        //console.log(arrayBarang[i]);
+     }
+    let kodePOArrayBarang = (i, kodePO) => {
+        arrayBarang[i].kodePO = kodePO;
+        //console.log(arrayBarang[i]);
      }
 
     //max-min input date
@@ -138,12 +150,13 @@ function BarangMasukPage(){
     const[PO, setPO] = useState([]);
     useEffect(() => {
         async function getNamaBarangAPI(){
-            const data = await seeAllPurchasing();
+            const data = await seeAllOutstanding();
             let optionData = []
             for (const barang of data){
                 const newBarang = {
                     namabarang: barang.namabarang,
-                    proyek: barang.proyek
+                    proyek: barang.proyek,
+                    supplier: barang.supplier
                 }
                 if(newBarang.proyek === proyek){
                     optionData.push(newBarang);
@@ -208,9 +221,11 @@ function BarangMasukPage(){
     const handleInputChange = (event) => {
         setInputs({...inputs, [event.target.name]: event.target.value});
     };
-
+    
+    const [adding, setAdding] = useState(true);
     const add = async (event) => {
         event.preventDefault();
+    
         if(window.confirm(
             "confirm adding: " + 
             "\n namabarang: " + arrayBarang.namabarang +
@@ -222,36 +237,57 @@ function BarangMasukPage(){
             "\n keterangan: " + inputs.keterangan) === true){
                 //let noSuratJalan = inputs.noSuratJalan1 + inputs.noSuratJalan2
                 
+                await updateOutstanding(arrayBarang)
+                
+                for(let i = 0; i < arrayBarang.length; i++){ //nanti bikinnya di function konversi biar gk keliatan ribet
+                    if(arrayBarang[i].namabarang === "Papan 2/20. P 4mtr"){
+                        /*if(arrayBarang[i].keterangan === ""){
+                            arrayBarang[i].keterangan = "konversi dari " + arrayBarang[i].satuan + " ke lbr = x62"
+                        }*/
+                        arrayBarang[i].quantity = arrayBarang[i].quantity * 62;
+                        arrayBarang[i].satuan = "lbr";
+                    }
+                    if(arrayBarang[i].namabarang === "Kaso Borneo 4/6. P 4mtr"){
+                        arrayBarang[i].quantity = arrayBarang[i].quantity * 104;
+                        arrayBarang[i].satuan = "btg";
+                    }
+                    if(arrayBarang[i].namabarang === "Kaso Borneo 5/7. P 4mtr"){
+                      
+                        arrayBarang[i].quantity = arrayBarang[i].quantity * 71;
+                        arrayBarang[i].satuan = "btg";
+                    } 
+                    if(arrayBarang[i].namabarang === "Karpet Talang; 0.9x60 m"){
+                      
+                        arrayBarang[i].quantity = arrayBarang[i].quantity * 50;
+                        arrayBarang[i].satuan = "m1";
+                    }
+                    /*if(arrayBarang[i].namabarang === "Paku 7 (23kg)" || "Paku 5 (23kg)" || "Paku 10 (23kg)"){
+                        arrayBarang[i].quantity = arrayBarang[i].quantity * 23;
+                        arrayBarang[i].satuan = "kg";
+                    }
+                    if(arrayBarang[i].namabarang === "Paku 7 (25kg)" || "Paku 5 (25kg)" || "Paku 10 (25kg)"){
+                        arrayBarang[i].quantity = arrayBarang[i].quantity * 25;
+                        arrayBarang[i].satuan = "kg";
+                    }*/
+                }
+                
                 await addBanyakBarangMasuk(arrayBarang);
+                await inventoryMasuk(arrayBarang);
+                
                 window.alert("item added as barang masuk");
+                addActivityMasuk(inputs);
+        
                 window.location.reload();
                 //addHistory(inputs);
-                //addActivityMasuk(inputs);
-                //inventoryMasuk(inputs);
                 
-                //const check = await findInventory(inputs);
-                //console.log("check" + check);
-                /*if(check === null) {
-                    //window.confirm('inventory not found')
-                    newInventory(inputs);
-                    //window.alert("new inventory added");
-                    window.location.reload();
-                }else{
-                    window.alert("updating inventory " + proyek)
-                    //window.confirm('inventory found')
-                    inventoryMasuk(inputs);
-                    //window.alert("inventory updated");
-                    window.location.reload();
-                } 
-                */
+                
             }
-            
-            
         //showKonfirmasi();
-        //navigate("/Barang_Masuk");
+        //navigate("/Barang_Masuk");   
+        
          
     }
-    
+        
     const columns = 
         /*return */[
         {
@@ -264,13 +300,6 @@ function BarangMasukPage(){
             text: 'Nama Barang',
             filter: textFilter(),
             sort: true,
-           /* formatter: (cellContent, row, index, extraData) => {
-                if (!selectedRow || extraData.selectedRow.id !== row.id) return cellContent;
-                return `You have selected : ${cellContent}`;
-              },
-              formatExtraData: {
-                selectedRow
-              },      */
         }, 
         {
             dataField: 'namaPenerima',
@@ -366,13 +395,7 @@ function BarangMasukPage(){
             
             <BootstrapTable keyField='kodemasuk' data={ rows } columns={ columns } 
             filter={ filterFactory() } pagination={paginationFactory()} 
-            /*selectRow={{
-                mode: "checkbox",
-                bgColor: "red",
-                clickToSelect: {handleClickToSelect},
-                onSelect: (row, isSelect, rowIndex, e) => {
-                }
-            }}*/
+            
             hover/>
                     
             <div>
@@ -408,6 +431,15 @@ function BarangMasukPage(){
                         </>
                         :
                         <>
+                         <h4>supplier: </h4> 
+                         <input type="text" class="form-control" list="supplier" name="supplier" value={inputs.supplier} 
+                         onChange={handleInputChange} required autoComplete="off" placeholder="wajib isi"></input>
+                         <datalist id="supplier" name="supplier">
+                            {options.map((item, index) => 
+                                <option key={index} value={item.supplier}></option>
+                                )
+                            }
+                         </datalist>
                         <h4>No Surat Jalan:</h4>
                         <div className="twoside">
                             <input type="text" class="side" list="noSuratJalan1" name="noSuratJalan1" value={inputs.noSuratJalan1} 
@@ -418,6 +450,7 @@ function BarangMasukPage(){
                                 )}
                             </datalist>
                         </div>
+                       
                         <div className="twoside">
                             <input type="text" class="side" list="noSuratJalan2" name="noSuratJalan2" value={inputs.noSuratJalan2} 
                             onChange={handleInputChange} placeholder="nomor surat jalan" required/>
@@ -436,9 +469,10 @@ function BarangMasukPage(){
                          <input type="text" class="form-control" list="namabarang" name="namabarang" value={item.namabarang} 
                          onChange={e => handleArrayBarang(index, e)} required autoComplete="off" placeholder="wajib isi"></input>
                          <datalist id="namabarang" name="namabarang">
-                             {options.map((item, index) => 
-                                 <option key={index} value={item.namabarang}></option>
-                             )}
+                            {options.map((item, index) => 
+                                <option key={index} value={item.namabarang}></option>
+                                )
+                            }
                          </datalist>
                          <div className="twoside">
                          <h4>Quantity:</h4>

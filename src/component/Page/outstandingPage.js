@@ -13,7 +13,9 @@ function OutstandingPage() {
         namabarang: '',
         ordered: 0,
         outstanding: 0,
-        proyek: proyek
+        proyek: proyek,
+        supplier: '',
+        tgl: ''
     }
 
     const [inputs, setInputs] = useState();    
@@ -31,7 +33,10 @@ function OutstandingPage() {
                     namabarang: barang.namabarang,
                     ordered: barang.ordered,
                     outstanding: barang.outstanding,
-                    proyek: barang.proyek
+                    proyek: barang.proyek,
+                    supplier: barang.supplier,
+                    tgl: barang.tgl,
+                    satuan: barang.satuan
                 }
                 if(newBarang.proyek === proyek){
                     optionData.push(newBarang);
@@ -50,19 +55,32 @@ function OutstandingPage() {
             sort: true
         },
         {
-            dataField: 'outstanding',
-            text: 'Outstanding',
+            dataField: 'supplier',
+            text: 'supplier',
+            filter: textFilter(),
         },
-        
+        {
+            dataField: 'outstanding',
+            text: 'total outstanding',
+        },
         {
             dataField: 'ordered',
-            text: 'Ordered'
+            text: 'total order'
             
         },
         {
+            dataField: 'satuan',
+            text: 'satuan'
+            
+        },
+        {
+            dataField: 'tgl',
+            text: 'tgl terbaru',
+        }/*,
+        {
             dataField: 'keterangan',
             text: 'Keterangan'
-        }];
+        }*/];
 
     const [modal, setModal] = useState();
     const resetInput = () => setInputs(initialState);

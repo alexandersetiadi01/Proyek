@@ -5,7 +5,7 @@ import filterFactory, { numberFilter, textFilter } from "react-bootstrap-table2-
 import paginationFactory from "react-bootstrap-table2-paginator";
 import Navbar from "../Menu/navbar";
 import "../../App.css";
-import { getAllBarang, getAllBarangKeluar, getAllBarangMasuk, getinventory, getinventoryKKC, getinventoryVPCA, getSelectedProyek } from "../../repository";
+import { getAllBarang, getAllBarangKeluar, getAllBarangMasuk, getInventory, getinventory, getinventoryGC, getinventoryGL, getinventoryGS, getinventoryKCN, getinventoryKKC, getinventorySLA16, getinventoryVPCA, getSelectedProyek } from "../../repository";
 
 function InventoryPage(){
 
@@ -14,34 +14,111 @@ function InventoryPage(){
 
     useEffect(() => {
         async function getinventoryAPI(){
+            let rowsData = []
             
-                const data = await getinventoryVPCA();
-                let rowsData = []
-                for (const barang of data){
-                    const newBarang = {
-                        namabarang: barang.namabarang,
-                        quantity: barang.quantity,
-                        proyek: barang.proyek,
-                        satuan: barang.satuan
+                if(proyek === "VANYA PARK CLUSTER AZURA"){
+                    const data = await getinventoryVPCA();
+                    for (const barang of data){
+                        const newBarang = {
+                            namabarang: barang.namabarang,
+                            quantity: barang.quantity,
+                            proyek: barang.proyek,
+                            satuan: barang.satuan
+                        }            
+                        rowsData.push(newBarang);
                     }
-                    rowsData.push(newBarang);
                 }
-            
-                const data2 = await getinventoryKKC();
+                if(proyek === "KANTOR KELURAHAN CILENGGANG"){
+                    const data = await getinventoryKKC();
+                    for (const barang of data){
+                        const newBarang = {
+                            namabarang: barang.namabarang,
+                            quantity: barang.quantity,
+                            proyek: barang.proyek,
+                            satuan: barang.satuan
+                        }            
+                        rowsData.push(newBarang);
+                    }
+                }
+                if(proyek === "GUDANG LENGKONG"){
+                    const data = await getinventoryGL();
+                    for (const barang of data){
+                        const newBarang = {
+                            namabarang: barang.namabarang,
+                            quantity: barang.quantity,
+                            proyek: barang.proyek,
+                            satuan: barang.satuan
+                        }            
+                        rowsData.push(newBarang);
+                    }
+                }
+                if(proyek === "GUDANG SERPONG"){
+                    const data = await getinventoryGS();
+                    for (const barang of data){
+                        const newBarang = {
+                            namabarang: barang.namabarang,
+                            quantity: barang.quantity,
+                            proyek: barang.proyek,
+                            satuan: barang.satuan
+                        }            
+                        rowsData.push(newBarang);
+                    }
+                }
+                if(proyek === "GATE CLUSTER"){
+                    const data = await getinventoryGC();
+                    for (const barang of data){
+                        const newBarang = {
+                            namabarang: barang.namabarang,
+                            quantity: barang.quantity,
+                            proyek: barang.proyek,
+                            satuan: barang.satuan
+                        }            
+                        rowsData.push(newBarang);
+                    }
+                }
+                if(proyek === "SERPONG LAGOON A16"){
+                    const data = await getinventorySLA16();
+                    for (const barang of data){
+                        const newBarang = {
+                            namabarang: barang.namabarang,
+                            quantity: barang.quantity,
+                            proyek: barang.proyek,
+                            satuan: barang.satuan
+                        }            
+                        rowsData.push(newBarang);
+                    }
+                }
+                if(proyek === "KANAPARK CLUSTER NOBU"){
+                    const data = await getinventoryKCN();
+                    for (const barang of data){
+                        const newBarang = {
+                            namabarang: barang.namabarang,
+                            quantity: barang.quantity,
+                            proyek: barang.proyek,
+                            satuan: barang.satuan,
+                        }            
+                        rowsData.push(newBarang);
+                    }
+                }
                 
-                for (const barang of data2){
+               /*
+            const data = await getInventory();
+            for (const barang of data){
+                if(barang.proyek === proyek){
                     const newBarang = {
                         namabarang: barang.namabarang,
                         quantity: barang.quantity,
                         proyek: barang.proyek,
                         satuan: barang.satuan
                     }
+                           
                     rowsData.push(newBarang);
                 }
-                setStock(rowsData);
+                
+            }*/
+            setStock(rowsData);
             
         }
-            
         getinventoryAPI();
     }, [])
 

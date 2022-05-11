@@ -37,7 +37,7 @@ function ProyekPage() {
     const selectProyek = (event) => {
         event.preventDefault();
         setSelectedProyek(input.namaProyek);
-        navigate("/History");
+        navigate("/Inventory");
     }
 
     const back = () => {

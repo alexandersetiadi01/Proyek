@@ -11,7 +11,7 @@ async function createBarang(barang) {
 }
 
 async function getAllMasterBarang(){
-    const response = await axios.get(API_HOST + "/api/masterBarang");
+    const response = await axios.get(API_HOST + "/api/masterBarang");  
 
     return response.data;
 }
@@ -99,6 +99,12 @@ async function getAllBarangKeluar(){
 
 //inventory
 
+async function getInventory(){
+    const response = await axios.get(API_HOST + "/api/inventory/seeInventory");
+
+    return response.data;
+}
+
 async function getinventoryVPCA(){
     const response = await axios.get(API_HOST + "/api/inventory/vanyaParkClusterAzura");
 
@@ -108,6 +114,38 @@ async function getinventoryVPCA(){
 
 async function getinventoryKKC(){
     const response = await axios.get(API_HOST + "/api/inventory/kantorKeluarahanCilenggang");
+
+    return response.data;
+}
+
+
+async function getinventoryGL(){
+    const response = await axios.get(API_HOST + "/api/inventory/gudangLengkong");
+
+    return response.data;
+}
+
+
+async function getinventoryGS(){
+    const response = await axios.get(API_HOST + "/api/inventory/gudangSerpong");
+
+    return response.data;
+}
+
+async function getinventoryKCN(){
+    const response = await axios.get(API_HOST + "/api/inventory/kanaparkClusterNobu");
+
+    return response.data;
+}
+
+async function getinventorySLA16(){
+    const response = await axios.get(API_HOST + "/api/inventory/serpongLagoonA16");
+
+    return response.data;
+}
+
+async function getinventoryGC(){
+    const response = await axios.get(API_HOST + "/api/inventory/gateCluster");
 
     return response.data;
 }
@@ -129,7 +167,30 @@ async function findInventoryKKC(namabarang){
 
     return response.data;
 }
+async function findInventoryGS(namabarang){
+    const response = await axios.get(API_HOST + "/api/inventory/findGudangSerpong", {params:{namabarang}});
 
+    return response.data;
+}
+async function findInventoryGL(namabarang){
+    const response = await axios.get(API_HOST + "/api/inventory/findGudangLengkong", {params:{namabarang}});
+
+    return response.data;
+}
+async function findInventoryKCN(namabarang){
+    const response = await axios.get(API_HOST + "/api/inventory/findKanaparkClusterNobu", {params:{namabarang}});
+
+    return response.data;
+}
+async function findInventoryGC(namabarang){
+    const response = await axios.get(API_HOST + "/api/inventory/findGateCluster", {params:{namabarang}});
+
+    return response.data;
+}async function findInventorySLA16(namabarang){
+    const response = await axios.get(API_HOST + "/api/inventory/findSerpongLagoonA16", {params:{namabarang}});
+
+    return response.data;
+}
 async function inventoryMasuk(barang){
     const response = await axios.put(API_HOST + "/api/inventory/inventoryMasuk", barang);
 
@@ -299,6 +360,18 @@ async function seeAllOutstanding(){
     return response.data;
 }
 
+async function selectOutstanding(barang){
+    const response = await axios.get(API_HOST + "/api/outstanding/select", barang);
+
+    return response.data;
+}
+
+async function updateOutstanding(barang){
+    const response = await axios.put(API_HOST + "/api/outstanding/update", barang);
+
+    return response.data;
+}
+
 //asset
 async function addAsset(asset){
     const response = await axios.post(API_HOST + "/api/asset", asset);
@@ -373,7 +446,9 @@ export{
     createBarang, getAllMasterBarang, getMasterBarangByName, checkMasterBarang, updateMasterBarang,
     addBarangMasuk, getAllBarangMasuk, addBarangSisa,getAllBarangSisa, getBarangMasukPO, addBanyakBarangMasuk, getSuratJalan,
     addBarangKeluar, getAllBarangKeluar,
-    getinventoryVPCA, getinventoryKKC, inventoryKeluar, inventoryMasuk, findInventoryKKC, findInventoryVPCA, newInventory,
+    getinventoryVPCA, getinventoryKKC, getinventoryGC, getinventoryGL, getinventoryGS, getinventoryKCN, getinventorySLA16, getInventory,
+    inventoryKeluar, inventoryMasuk, newInventory, 
+    findInventoryKKC, findInventoryVPCA, findInventoryGC, findInventoryGL, findInventoryGS, findInventoryKCN, findInventorySLA16,
     getHistory, addHistory,
     getUser, register, userList, setUserName, getUserName, updateUser,
     seeAllPurchasing, addPurchasing, getKodePO, getInfo,
@@ -381,7 +456,7 @@ export{
     getAllActivity, seeAllActivity, addActivityKeluar, addActivityMasuk, addActivitySisa, addActivityAsset, addActivityPurchasing,
     seeAllProyek, setSelectedProyek, getSelectedProyek,
     addSupplier, getAllSupplier, selectSupplier, updateSupplier,
-    seeAllOutstanding, addOutstanding,
+    seeAllOutstanding, addOutstanding, selectOutstanding, updateOutstanding,
     addAsset, seeAllAsset, findAsset, updateAsset,
     getAllSatuan
 }  

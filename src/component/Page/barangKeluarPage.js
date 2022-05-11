@@ -3,7 +3,7 @@ import { Button, CloseButton, Modal } from "react-bootstrap";
 import * as BsIcons from "react-icons/bs";
 import { addBarangKeluar, getAllBarangKeluar, getAllBarangMasuk,
     findInventoryVPCA, findInventoryKKC, newInventory, inventoryKeluar, 
-    addActivityKeluar, getUserName, getSelectedProyek, seeAllProyek, getAllSatuan } from "../../repository";
+    addActivityKeluar, getUserName, getSelectedProyek, seeAllProyek, getAllSatuan, findInventoryGS, findInventoryGL, findInventoryGC, findInventorySLA16, findInventoryKCN } from "../../repository";
 
 import BootstrapTable from 'react-bootstrap-table-next';
 import filterFactory, { dateFilter, textFilter } from 'react-bootstrap-table2-filter';
@@ -53,10 +53,8 @@ function BarangKeluarPage(){
 
     const keluarinBarang = async (event) => {
         event.preventDefault();
-        const checkVPCA = await findInventoryVPCA(inputs.namabarang);
-        const checkKKC = await findInventoryKKC(inputs.namabarang);
-       
         if(proyek === "KANTOR KELURAHAN CILENGGANG"){
+            const checkKKC = await findInventoryKKC(inputs.namabarang);
             if(checkKKC.quantity >= inputs.quantity){
                 if(window.confirm(
                     "confirm adding: " + 
@@ -81,6 +79,7 @@ function BarangKeluarPage(){
             }
         }
         if(proyek === "VANYA PARK CLUSTER AZURA"){
+            const checkVPCA = await findInventoryVPCA(inputs.namabarang);
             if(checkVPCA.quantity >= inputs.quantity){
                 if(window.confirm(
                     "confirm adding: " + 
@@ -104,9 +103,135 @@ function BarangKeluarPage(){
                 window.alert("jumlah barang di inventory tidak cukup");
             }
         }
+        if(proyek === "GATE CLUSTER"){
+            console.log("gate cluster barang keluar")
+            
+            const checkGC = await findInventoryGC(inputs.namabarang);
+            if(checkGC.quantity >= inputs.quantity){
+                if(window.confirm(
+                    "confirm adding: " + 
+                    "\n namabarang: " + inputs.namabarang +
+                    "\n nama pengambil: " + inputs.namaPengambil +
+                    "\n quantity: " + inputs.quantity +
+                    "\n tgl: " + inputs.tgl + 
+                    "\n keterangan: " + inputs.keterangan + 
+                    "\n tujuan: " + inputs.tujuan) === true){
+                        
+                        await addBarangKeluar(inputs);
+                        window.alert("berhasil menambah item sebagai barang keluar");
+                        //addHistory(inputs);
+                        inventoryKeluar(inputs);
+                        addActivityKeluar(inputs)
+                        showModal();
+                        window.location.reload();
+                }
+            } 
+            if(checkGC.quantity < inputs.quantity){
+                window.alert("jumlah barang di inventory tidak cukup");
+            }
+        }
+        if(proyek === "GUDANG SERPONG"){
+            const checkGS = await findInventoryGS(inputs.namabarang);
+            if(checkGS.quantity >= inputs.quantity){
+                if(window.confirm(
+                    "confirm adding: " + 
+                    "\n namabarang: " + inputs.namabarang +
+                    "\n nama pengambil: " + inputs.namaPengambil +
+                    "\n quantity: " + inputs.quantity +
+                    "\n tgl: " + inputs.tgl + 
+                    "\n keterangan: " + inputs.keterangan + 
+                    "\n tujuan: " + inputs.tujuan) === true){
+                        
+                        await addBarangKeluar(inputs);
+                        window.alert("berhasil menambah item sebagai barang keluar");
+                        //addHistory(inputs);
+                        inventoryKeluar(inputs);
+                        addActivityKeluar(inputs)
+                        showModal();
+                        window.location.reload();
+                }
+            } 
+            if(checkGS.quantity < inputs.quantity){
+                window.alert("jumlah barang di inventory tidak cukup");
+            }
+        }
+        if(proyek === "GUDANG LENGKONG"){
+            const checkGL = await findInventoryGL(inputs.namabarang);
+            console.log(checkGL.quantity)
+
+            if(checkGL.quantity >= inputs.quantity){
+                if(window.confirm(
+                    "confirm adding: " + 
+                    "\n namabarang: " + inputs.namabarang +
+                    "\n nama pengambil: " + inputs.namaPengambil +
+                    "\n quantity: " + inputs.quantity +
+                    "\n tgl: " + inputs.tgl + 
+                    "\n keterangan: " + inputs.keterangan + 
+                    "\n tujuan: " + inputs.tujuan) === true){
+                        
+                        await addBarangKeluar(inputs);
+                        window.alert("berhasil menambah item sebagai barang keluar");
+                        //addHistory(inputs);
+                        inventoryKeluar(inputs);
+                        addActivityKeluar(inputs)
+                        showModal();
+                        window.location.reload();
+                }
+            } 
+            if(checkGL.quantity < inputs.quantity){
+                window.alert("jumlah barang di inventory tidak cukup");
+            }
+        }
+        if(proyek === "KANAPARK CLUSTER NOBU"){
+            const checkKCN = await findInventoryKCN(inputs.namabarang);
+            if(checkKCN.quantity >= inputs.quantity){
+                if(window.confirm(
+                    "confirm adding: " + 
+                    "\n namabarang: " + inputs.namabarang +
+                    "\n nama pengambil: " + inputs.namaPengambil +
+                    "\n quantity: " + inputs.quantity +
+                    "\n tgl: " + inputs.tgl + 
+                    "\n keterangan: " + inputs.keterangan + 
+                    "\n tujuan: " + inputs.tujuan) === true){
+                        
+                        await addBarangKeluar(inputs);
+                        window.alert("berhasil menambah item sebagai barang keluar");
+                        //addHistory(inputs);
+                        inventoryKeluar(inputs);
+                        addActivityKeluar(inputs)
+                        showModal();
+                        window.location.reload();
+                }
+            } 
+            if(checkKCN.quantity < inputs.quantity){
+                window.alert("jumlah barang di inventory tidak cukup");
+            }
+        }if(proyek === "SERPONG LAGOON A16"){
+            const checkSLA16 = await findInventorySLA16(inputs.namabarang);
+            if(checkSLA16.quantity >= inputs.quantity){
+                if(window.confirm(
+                    "confirm adding: " + 
+                    "\n namabarang: " + inputs.namabarang +
+                    "\n nama pengambil: " + inputs.namaPengambil +
+                    "\n quantity: " + inputs.quantity +
+                    "\n tgl: " + inputs.tgl + 
+                    "\n keterangan: " + inputs.keterangan + 
+                    "\n tujuan: " + inputs.tujuan) === true){
+                        
+                        await addBarangKeluar(inputs);
+                        window.alert("berhasil menambah item sebagai barang keluar");
+                        //addHistory(inputs);
+                        inventoryKeluar(inputs);
+                        addActivityKeluar(inputs)
+                        showModal();
+                        window.location.reload();
+                }
+            } 
+            if(checkSLA16.quantity < inputs.quantity){
+                window.alert("jumlah barang di inventory tidak cukup");
+            }
+        }
         //const check = await findInventory(inputs.namabarang);
-        
-        
     }
 
     const [rows, setRows] = useState([]);

@@ -180,7 +180,7 @@ function AssetPage() {
                 <h4>Lokasi:</h4>
                 <input type="text" class="form-control" name="lokasi" value={inputs.lokasi} 
                 onChange={handleInputChange} placeholder="wajib isi" required/>
-                <h4>Pic:</h4>
+                <h4>PIC:</h4>
                 <input type="text" class="form-control" name="Pic" value={inputs.Pic} 
                 onChange={handleInputChange} placeholder="wajib isi" required/>
                 <h4>Keterangan:</h4>

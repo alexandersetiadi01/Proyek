@@ -13,6 +13,11 @@ function Navbar(){
    //const location = useLocation();
     const showSidebar = () => setSidebar(!sidebar);
     const navigate = useNavigate();
+    const pilihProyek = () => {
+        if(window.confirm("pindah proyek?") === true){
+            navigate("/proyek");
+        }
+    }
     const logout = () => {
         if(window.confirm("logging out?") === true){
             setLogOut();
@@ -30,7 +35,7 @@ function Navbar(){
         <Link to="#" className="menu-bars">
             <FaIcons.FaBars onClick={showSidebar}/>
         </Link>  
-        <h1 title="double click to logout" onDoubleClick={logout}> {proyek} - {user}</h1>
+        <h1 title="double click to pindah proyek" onDoubleClick={pilihProyek}> {proyek} - {user}</h1>
         </nav>
         <nav className={sidebar ? 'nav-menu-active' : 'nav-menu'}>
             

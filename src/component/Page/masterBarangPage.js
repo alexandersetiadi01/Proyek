@@ -235,7 +235,7 @@ function MasterBarangPage(){
                         <input type="text" class="form-control" name="type" value={update.type} onChange={handleUpdateChange}></input>
                         <h4>Satuan:</h4>
                         <input type="text" class="form-control" list="satuan" name="satuan" value={update.satuan} 
-                        onChange={handleInputChange} required autoComplete="off" placeholder="wajib isi"></input>
+                        onChange={handleUpdateChange} required autoComplete="off" placeholder="wajib isi"></input>
                         <datalist id="satuan" name="satuan">
                             {satuan.map((item, index) => 
                                 <option key={index} value={item.satuan}></option>
